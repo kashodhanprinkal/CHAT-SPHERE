@@ -9,29 +9,43 @@ function ContactList() {
     allContacts,
     setSelectedUser,
     isUsersLoading,
+    selectedUser,
   } = useChatStore();
 
   const { onlineUsers } = useAuthStore();
 
   useEffect(() => {
     getAllContacts();
-  }, [getAllContacts]);
+  }, []);
 
   if (isUsersLoading) return <UsersLoadingSkeleton />;
 
+  if (!allContacts || allContacts.length === 0) {
+    return (
+      <div className="text-center text-slate-400 mt-10">
+        No contacts found
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3 p-4">
-      {allContacts?.map((contact) => (
+      {allContacts.map((contact) => (
         <div
           key={contact._id}
-          className="bg-cyan-500/10 p-4 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition-colors"
           onClick={() => setSelectedUser(contact)}
+          className={`p-4 rounded-lg cursor-pointer transition-colors ${
+            selectedUser?._id === contact._id
+              ? "bg-cyan-500/30"
+              : "bg-cyan-500/10 hover:bg-cyan-500/20"
+          }`}
         >
           <div className="flex items-center gap-3">
-            {/* Avatar */}
             <div
               className={`avatar ${
-                onlineUsers?.includes(contact._id) ? "online" : "offline"
+                onlineUsers?.includes(contact._id)
+                  ? "online"
+                  : "offline"
               }`}
             >
               <div className="size-12 rounded-full">
@@ -42,10 +56,16 @@ function ContactList() {
               </div>
             </div>
 
-            {/* Name */}
-            <h4 className="text-slate-200 font-medium truncate">
-              {contact.fullName}
-            </h4>
+            <div>
+              <h4 className="text-slate-200 font-medium">
+                {contact.fullName}
+              </h4>
+              <p className="text-xs text-slate-400">
+                {onlineUsers?.includes(contact._id)
+                  ? "Online"
+                  : "Offline"}
+              </p>
+            </div>
           </div>
         </div>
       ))}
