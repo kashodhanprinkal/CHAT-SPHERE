@@ -58,7 +58,7 @@ if (!receiverExists){
             const uploadResponse = await cloudinary.uploader.upload(image);
             imageUrl= uploadResponse.secure_url
         }
-        const newMessage = new message ({
+        const newMessage = new Message ({
             senderId,
             receiverId,
             text,
@@ -69,8 +69,9 @@ if (!receiverExists){
         res.status(201).json(newMessage)
 
     } catch (error) {
-        console.log("error in sendMessage contoller",error.message)
-    }
+  console.log("error in sendMessage controller", error.message);
+  res.status(500).json({ message: "Internal server error" });
+}
 }
 
 export const getChatPartners = async (req, res) => {
