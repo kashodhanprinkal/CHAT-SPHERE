@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs"
 import { generateToken } from "../lib/utils.js";
 import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 import cloudinary from "../lib/cloudinary.js";
+import crypto from "crypto";
 
 export const signup = async (req,res)=>{
     const { fullName, email, password, profilePic } =req.body
@@ -89,6 +90,9 @@ try {
     if(!user) return res.status(400).json({message:"invalid credentials"})
 
         const isPasswordCorrect = await bcrypt.compare(password,user.password)
+        console.log("Entered password:", password);
+console.log("Stored password:", user.password);
+console.log("Match:", isPasswordCorrect);
         if(!isPasswordCorrect) return res.status(400).json({message:"invalid credentials"})
 
         generateToken (user._id,res)
@@ -144,6 +148,82 @@ export const updateProfile = async (req, res) => {
 
   } catch (error) {
     console.log("Error in update profile:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ================= FORGOT PASSWORD =================
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const resetToken = user.getResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+    // ❌ COMMENT EMAIL FOR NOW
+    // await sendResetEmail(user.email, user.fullName, resetUrl);
+
+    // ✅ RETURN URL DIRECTLY (for testing)
+    res.status(200).json({
+      message: "Reset link generated",
+      resetUrl
+    });
+
+  } catch (error) {
+    console.error("ERROR:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ================= RESET PASSWORD =================
+export const resetPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    // 🔐 Hash token from URL
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+
+    // 🔎 Find user with valid token + not expired
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Token invalid or expired",
+      });
+    }
+
+    // 🔒 Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // 🔄 Update password
+    user.password = hashedPassword;
+
+    // 🧹 Clear reset fields
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Password reset successful",
+    });
+
+  } catch (error) {
+    console.error("Error in resetPassword:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

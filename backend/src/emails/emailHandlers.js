@@ -30,3 +30,21 @@ export const sendWelcomeEmail = async (email, name, clientURL) => {
     console.error("Email Handler Error:", error);
   }
 };
+
+export const sendResetEmail = async (email, name, url) => {
+  try {
+    await transporter.sendMail({
+      to: email,
+      subject: "Password Reset Request",
+      html: `
+        <h3>Hello ${name}</h3>
+        <p>You requested a password reset.</p>
+        <p>Click below link to reset password:</p>
+        <a href="${url}">${url}</a>
+        <p>This link will expire in 10 minutes.</p>
+      `,
+    });
+  } catch (error) {
+    console.error("Error sending reset email:", error);
+  }
+};

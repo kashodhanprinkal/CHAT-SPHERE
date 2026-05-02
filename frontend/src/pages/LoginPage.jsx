@@ -71,6 +71,7 @@ function LoginPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
+                    required
                     className="w-full pl-10 pr-4 py-3 rounded-lg 
                     bg-white/5 border border-white/10 text-white 
                     placeholder:text-slate-500 
@@ -96,6 +97,7 @@ function LoginPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
                     }
+                    required
                     className="w-full pl-10 pr-4 py-3 rounded-lg 
                     bg-white/5 border border-white/10 text-white 
                     placeholder:text-slate-500 
@@ -103,6 +105,16 @@ function LoginPage() {
                     focus:border-cyan-400 transition-all duration-300"
                     placeholder="Enter your password"
                   />
+                </div>
+
+                {/* 🔥 FORGOT PASSWORD */}
+                <div className="flex justify-end mt-1">
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-slate-400 hover:text-cyan-400 transition"
+                  >
+                    Forgot Password?
+                  </Link>
                 </div>
               </div>
 

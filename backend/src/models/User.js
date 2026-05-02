@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema({
     email:{
@@ -20,11 +20,30 @@ const userSchema = new mongoose.Schema({
     profilePic:{
         type : String,
         default:""
-    }
-},
-{timestamps: true} // created at 
-);
+    },
 
-const User  = mongoose.model("User",userSchema)
+    // 🔐 ADD THESE
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+
+},{
+    timestamps: true
+});
+
+// 🔐 ADD THIS METHOD
+userSchema.methods.getResetPasswordToken = function () {
+    const resetToken = crypto.randomBytes(20).toString("hex");
+
+    this.resetPasswordToken = crypto
+        .createHash("sha256")
+        .update(resetToken)
+        .digest("hex");
+
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 min
+
+    return resetToken;
+};
+
+const User  = mongoose.model("User",userSchema);
 
 export default User;

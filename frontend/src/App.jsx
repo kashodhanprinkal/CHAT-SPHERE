@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import ChatPage from "./pages/ChatPage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import { useAuthStore } from "./store/useAuthStore.js";
 import { useEffect } from "react";
 import PageLoader from "./components/PageLoader";
@@ -91,6 +93,15 @@ function App() {
                   path="/signup"
                   element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
                 />
+
+                <Route 
+                path="/forgot-password" 
+                element={<ForgotPassword />} 
+                />
+<Route 
+path="/reset-password/:token" 
+element={<ResetPassword />} 
+/>
               </Routes>
             </div>
           </div>
