@@ -1,47 +1,57 @@
-
 # 💬 Chat Sphere – Real-Time Chat Application
 
-Built a full-stack real-time chat application using MERN stack and Socket.IO with features like authentication, live messaging, online user tracking, and image sharing. Implemented secure APIs, real-time communication, and optimized UI for better user experience.
-
-Chat Sphere is a full-stack real-time chat application built using the MERN stack and Socket.IO.  
-It supports instant messaging, real-time updates, image sharing, and secure authentication.
-
-
+A **production-ready full-stack real-time chat application** built with the MERN stack and Socket.IO.
+It enables instant messaging, real-time updates, secure authentication, and media sharing with a modern UI.
 
 ---
 
 ## 🚀 Features
 
-- 🔐 Authentication (JWT + HTTP-only cookies)
-- 💬 Real-time messaging using Socket.IO
-- 🟢 Online / Offline user tracking
-- 📸 Image upload & sharing (Cloudinary)
-- ⚡ Optimistic UI (instant message rendering)
-- 🔔 Sound notifications
-- ⌨️ Keyboard shortcuts (ESC to close chat)
-- 🔄 Auto-scroll to latest messages
-- 📱 Fully responsive UI
+### 🔐 Authentication & Security
+
+* JWT Authentication (HTTP-only cookies)
+* Secure login & signup system
+* Forgot / Reset password (token-based)
+* Protected routes & middleware
+
+### 💬 Real-Time Communication
+
+* Instant messaging using Socket.IO
+* Typing indicator (real-time)
+* Online / Offline user tracking
+* Optimistic UI updates
+
+### 📸 Media & UX
+
+* Image upload & sharing (Cloudinary)
+* Auto-scroll to latest messages
+* Sound notifications 🔔
+* Keyboard shortcuts (ESC to close chat)
+* Fully responsive UI 📱
 
 ---
 
 ## 🧠 Tech Stack
 
-### Frontend
-- React (Vite)
-- Tailwind CSS
-- Zustand
-- Axios
+### 🖥️ Frontend
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB (Mongoose)
-- Socket.IO
+* React (Vite)
+* Tailwind CSS
+* Zustand (State Management)
+* Axios
 
-### Services
-- Cloudinary (media storage)
-- Resend (email service)
-- Arcjet (security middleware)
+### ⚙️ Backend
+
+* Node.js
+* Express.js
+* MongoDB (Mongoose)
+* Socket.IO
+
+### ☁️ Services & Tools
+
+* Cloudinary (Media Storage)
+* Resend (Email Service)
+* Arcjet (Security Middleware)
 
 ---
 
@@ -51,59 +61,44 @@ It supports instant messaging, real-time updates, image sharing, and secure auth
 CHAT-SPHERE/
 │
 ├── backend/
-│   ├── controllers/        # Business logic (auth, messages)
+│   ├── controllers/        # Business logic
 │   ├── routes/             # API routes
-│   ├── middleware/         # Auth, security (Arcjet, JWT)
-│   ├── models/             # Mongoose schemas
-│   ├── lib/                # DB connection, socket setup, utils
-│   ├── .env                # 🔐 Environment variables (NOT COMMITTED)
+│   ├── middleware/         # Auth & security
+│   ├── models/             # Database schemas
+│   ├── lib/                # DB & socket setup
 │   ├── server.js           # Entry point
 │   └── package.json
 │
 ├── frontend/
-│   ├── components/         # UI components (Chat, Header, Input)
+│   ├── components/         # UI components
 │   ├── pages/              # App pages
-│   ├── store/              # Zustand state management
-│   ├── hooks/              # Custom hooks (sound, etc.)
-│   ├── .env                # 🌐 Frontend environment variables (optional)
+│   ├── store/              # Zustand store
+│   ├── hooks/              # Custom hooks
 │   ├── index.html
 │   └── package.json
 │
-├── .gitignore              # Ignore node_modules, .env, etc.
-├── README.md               # Project documentation
-└── package.json (optional root)
+├── .gitignore
+└── README.md
 ```
 
 ---
-
-## ⚠️ Important Notes About `.env`
-
-* The `.env` file **must be created inside the `backend/` folder**
-* Never push `.env` to GitHub
-* Add this to `.gitignore`:
-
-```
-
----
-
 
 ## ⚙️ Environment Variables
 
-Create a `.env` file in the backend:
+Create a `.env` file inside the **backend/** folder:
 
 ```
-
 PORT=3000
 MONGO_URI=your_mongodb_uri
 
-NODE_ENV=production
+NODE_ENV=development
 JWT_SECRET=your_jwt_secret
 
 RESEND_API_KEY=your_resend_api_key
 EMAIL_FROM=your_email
 EMAIL_FROM_NAME=your_name
 
-CLIENT_URL=[http://localhost:5173](http://localhost:5173)
+CLIENT_URL=http://localhost:5173
 
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
@@ -111,28 +106,22 @@ CLOUDINARY_API_SECRET=your_api_secret
 
 ARCJET_KEY=your_arcjet_key
 ARCJET_ENV=development
-
-````
-
-⚠️ **Important:**
-- Never expose real values
-- Do not commit `.env` file
-- Use environment variables in deployment platforms
+```
 
 ---
 
 ## 📦 Installation
 
-### 1. Clone Repository
+### 1️⃣ Clone Repository
 
 ```bash
 git clone https://github.com/kashodhanprinkal/CHAT-SPHERE.git
 cd CHAT-SPHERE
-````
+```
 
 ---
 
-### 2. Install Dependencies
+### 2️⃣ Install Dependencies
 
 #### Backend
 
@@ -150,7 +139,7 @@ npm install
 
 ---
 
-### 3. Run Application
+### 3️⃣ Run Application
 
 #### Start Backend
 
@@ -168,63 +157,85 @@ npm run dev
 
 ## 🔌 API Endpoints
 
-| Method | Endpoint               | Description       |
-| ------ | ---------------------- | ----------------- |
-| POST   | /api/auth/signup       | Register user     |
-| POST   | /api/auth/login        | Login user        |
-| POST   | /api/auth/logout       | Logout            |
-| GET    | /api/messages/contacts | Get all contacts  |
-| GET    | /api/messages/chats    | Get chat partners |
-| GET    | /api/messages/:id      | Get messages      |
-| POST   | /api/messages/send/:id | Send message      |
+### 🔐 Auth Routes
+
+| Method | Endpoint                        | Description         |
+| ------ | ------------------------------- | ------------------- |
+| POST   | /api/auth/signup                | Register user       |
+| POST   | /api/auth/login                 | Login user          |
+| POST   | /api/auth/logout                | Logout user         |
+| POST   | /api/auth/forgot-password       | Generate reset link |
+| POST   | /api/auth/reset-password/:token | Reset password      |
 
 ---
 
-## 🔄 Real-Time Events
+### 💬 Message Routes
 
-| Event          | Description          |
-| -------------- | -------------------- |
-| getOnlineUsers | List of online users |
-| newMessage     | Receive new message  |
+| Method | Endpoint               | Description  |
+| ------ | ---------------------- | ------------ |
+| GET    | /api/messages/contacts | Get contacts |
+| GET    | /api/messages/:id      | Get messages |
+| POST   | /api/messages/send/:id | Send message |
 
 ---
 
-## ⚠️ Important Notes
+## 🔄 Real-Time Events (Socket.IO)
 
-* Enable CORS with credentials
-* Use `withCredentials: true` in Axios
-* Ensure frontend URL matches backend CORS
-* Never expose secrets in public repositories
+| Event          | Description      |
+| -------------- | ---------------- |
+| getOnlineUsers | Get online users |
+| newMessage     | Receive message  |
+| typing         | User typing      |
+| stop-typing    | Stop typing      |
 
 ---
 
 ## 🧪 Key Functionalities
 
-* Real-time chat using WebSockets
-* Optimistic UI updates
+* Real-time chat with WebSockets
+* Typing indicator system
+* Forgot password with secure token flow
 * Image upload with preview
-* Auto-scroll to latest messages
-* Online/offline detection
+* Online/offline presence tracking
+* Optimistic UI updates
 
 ---
 
-## 👨‍💻 Author
+## 🛡 Security Features
 
-**Kashodhan Prinkal**
-
-**Crafted by Prinkal Kashodhan — debugging code and life, one cup of tea at a time ☕**
+* HTTP-only cookies
+* JWT authentication
+* Protected routes
+* Arcjet middleware (rate limiting & bot protection)
+* Input validation
 
 ---
 
 ## ⭐ Future Improvements
 
-* ✔ Message seen status
-* 💬 Typing indicator
+* ✔ Seen / Delivered message status
 * 🔔 Push notifications
 * 👥 Group chats
-* 📱 Progressive Web App
-
-```
+* 🎤 Voice messages
+* 📞 Video / Voice calling (WebRTC)
+* 📱 Progressive Web App (PWA)
 
 ---
 
+## 👨‍💻 Author
+
+**Prinkal Kashodhan**
+
+> Crafted by Prinkal — debugging code and life, one cup of tea at a time ☕
+
+---
+
+## 🌟 Show Your Support
+
+If you like this project:
+
+⭐ Star the repo
+
+🍴 Fork it
+
+📢 Share it
