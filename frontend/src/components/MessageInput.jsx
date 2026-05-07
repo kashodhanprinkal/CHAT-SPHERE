@@ -1,18 +1,28 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useKeyboardSound from "../hooks/useKeyboardSound";
 import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 import toast from "react-hot-toast";
 import { ImageIcon, SendIcon, X } from "lucide-react";
 
 function MessageInput() {
   const { playRandomKeyStrokeSound } = useKeyboardSound();
-  const { sendMessage, isSoundEnabled } = useChatStore();
+
+  // ✅ Chat store
+  const { sendMessage, isSoundEnabled, selectedUser } = useChatStore();
+
+  // ✅ Auth store (SOCKET IS HERE)
+  const { authUser, socket } = useAuthStore();
 
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
 
   const fileInputRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
+  // =========================
+  // 📤 SEND MESSAGE
+  // =========================
   const handleSendMessage = (e) => {
     e.preventDefault();
 
@@ -25,15 +35,26 @@ function MessageInput() {
       image: imagePreview,
     });
 
+    // 🔥 STOP TYPING immediately
+    if (socket && selectedUser?._id) {
+      socket.emit("stop-typing", {
+        receiverId: selectedUser._id,
+      });
+    }
+
     setText("");
-    setImagePreview(null); // ✅ fix
+    setImagePreview(null);
+
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // =========================
+  // 🖼 IMAGE HANDLER
+  // =========================
   const handleImageChange = (e) => {
     const file = e.target.files[0];
 
-    if (!file) return; // ✅ prevent crash
+    if (!file) return;
 
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
@@ -50,10 +71,50 @@ function MessageInput() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // =========================
+  // ⌨️ TYPING HANDLER
+  // =========================
+  const handleTyping = (e) => {
+    setText(e.target.value);
+
+    if (isSoundEnabled) playRandomKeyStrokeSound();
+
+    if (!socket || !selectedUser?._id) return;
+
+    // 🔥 EMIT TYPING
+    socket.emit("typing", {
+      receiverId: selectedUser._id,
+      senderName: authUser.fullName,
+    });
+
+    // clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // 🔥 AUTO STOP AFTER 1 SEC
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("stop-typing", {
+        receiverId: selectedUser._id,
+      });
+    }, 1000);
+  };
+
+  // =========================
+  // 🧹 CLEANUP
+  // =========================
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="p-4 border-t border-white/10 bg-white/5 backdrop-blur-xl">
-      
-      {/* Image Preview */}
+
+      {/* 🖼 IMAGE PREVIEW */}
       {imagePreview && (
         <div className="max-w-3xl mx-auto mb-3 flex items-center">
           <div className="relative group">
@@ -74,24 +135,21 @@ function MessageInput() {
         </div>
       )}
 
-      {/* Input Row */}
+      {/* 💬 INPUT ROW */}
       <form
         onSubmit={handleSendMessage}
         className="max-w-3xl mx-auto flex items-center gap-3"
       >
-        {/* Text Input */}
+        {/* TEXT INPUT */}
         <input
           type="text"
           value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-            if (isSoundEnabled) playRandomKeyStrokeSound();
-          }}
+          onChange={handleTyping}
           placeholder="Type your message..."
           className="flex-1 bg-slate-900/60 border border-white/10 rounded-full py-2 px-4 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
         />
 
-        {/* Hidden File Input */}
+        {/* FILE INPUT */}
         <input
           type="file"
           accept="image/*"
@@ -100,7 +158,7 @@ function MessageInput() {
           className="hidden"
         />
 
-        {/* Image Button */}
+        {/* IMAGE BUTTON */}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
@@ -113,7 +171,7 @@ function MessageInput() {
           <ImageIcon className="w-5 h-5" />
         </button>
 
-        {/* Send Button */}
+        {/* SEND BUTTON */}
         <button
           type="submit"
           disabled={!text.trim() && !imagePreview}

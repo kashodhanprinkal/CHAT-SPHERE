@@ -14,33 +14,50 @@ function ChatContainer() {
     isMessagesLoading,
     unsubscribeFromMessages,
     subscribeToMessages,
+
+    // ✅ Typing
+    typingUser,
+    subscribeToTyping,
+    unsubscribeFromTyping,
   } = useChatStore();
 
   const { authUser } = useAuthStore();
-  const messageEndRef = useRef(null)
+  const messageEndRef = useRef(null);
 
+  // =========================
+  // 📩 FETCH + SOCKET SUBSCRIBE
+  // =========================
   useEffect(() => {
     if (selectedUser?._id) {
       getMessagesByUserId(selectedUser._id);
-      subscribeToMessages()
 
-      // clean up 
+      subscribeToMessages();
+      subscribeToTyping(); // ✅ typing start
 
-      return ()=> unsubscribeFromMessages()
+      return () => {
+        unsubscribeFromMessages();
+        unsubscribeFromTyping(); // ✅ cleanup
+      };
     }
-  }, [selectedUser, getMessagesByUserId, unsubscribeFromMessages, subscribeToMessages]);
+  }, [selectedUser]);
 
-  useEffect(()=> {
-    if (messageEndRef.current){
-      messageEndRef.current.scrollIntoView({ behavior : "smooth"})
+  // =========================
+  // 🔽 AUTO SCROLL
+  // =========================
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  },[messages])
-  
+  }, [messages]);
 
   return (
-    <>
+    <div className="flex flex-col h-full">
+      {/* HEADER */}
       <ChatHeader />
 
+      {/* =========================
+          💬 MESSAGES
+      ========================= */}
       <div className="flex-1 px-6 overflow-y-auto py-8">
         {messages.length > 0 && !isMessagesLoading ? (
           <div className="max-w-3xl mx-auto space-y-6">
@@ -60,7 +77,7 @@ function ChatContainer() {
                       : "bg-slate-800 text-slate-200"
                   }`}
                 >
-                  {/* Shared image */}
+                  {/* 📸 Image */}
                   {msg.image && (
                     <img
                       src={msg.image}
@@ -69,10 +86,10 @@ function ChatContainer() {
                     />
                   )}
 
-                  {/* Message text */}
+                  {/* 💬 Text */}
                   {msg.text && <p>{msg.text}</p>}
 
-                  {/* Time */}
+                  {/* ⏰ Time */}
                   <span className="block text-xs opacity-70 mt-2">
                     {new Date(msg.createdAt).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -82,7 +99,8 @@ function ChatContainer() {
                 </div>
               </div>
             ))}
-            {/* scroll target */}
+
+            {/* 🔽 Scroll anchor */}
             <div ref={messageEndRef} />
           </div>
         ) : isMessagesLoading ? (
@@ -92,8 +110,25 @@ function ChatContainer() {
         )}
       </div>
 
+      {/* =========================
+          ✍️ TYPING INDICATOR
+      ========================= */}
+      {/* =========================
+    ✍️ TYPING INDICATOR
+========================= */}
+{typingUser?.senderName && (
+  <div className="px-6 pb-1">
+    <p className="text-xs text-cyan-400 italic animate-pulse">
+      {typingUser.senderName} is typing...
+    </p>
+  </div>
+)}
+
+      {/* =========================
+          📤 INPUT
+      ========================= */}
       <MessageInput />
-    </>
+    </div>
   );
 }
 

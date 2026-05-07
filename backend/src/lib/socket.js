@@ -19,13 +19,13 @@ const io = new Server(server, {
 // ✅ apply auth middleware
 io.use(socketAuthMiddleware);
 
-// we will use this to check if user is online or not
-export function getReceiverSocketId(userId) {
-    return userSocketMap[userId]
-}
-
 // ✅ store online users
 const userSocketMap = {}; // { userId: socketId }
+
+// ✅ helper
+export function getReceiverSocketId(userId) {
+  return userSocketMap[userId];
+}
 
 io.on("connection", (socket) => {
   console.log("✅ user connected:", socket.user.fullName);
@@ -33,8 +33,32 @@ io.on("connection", (socket) => {
   const userId = socket.userId;
   userSocketMap[userId] = socket.id;
 
-  // ✅ send online users to all
+  // ✅ send online users
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  // =========================
+  // ✍️ TYPING INDICATOR
+  // =========================
+
+  socket.on("typing", ({ receiverId, senderName }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("typing", {
+        senderName,
+      });
+    }
+  });
+
+  socket.on("stop-typing", ({ receiverId }) => {
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("stop-typing");
+    }
+  });
+
+  // =========================
 
   socket.on("disconnect", () => {
     console.log("❌ user disconnected:", socket.user.fullName);
