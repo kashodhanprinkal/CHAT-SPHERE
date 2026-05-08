@@ -85,6 +85,30 @@ The project focuses on **scalable backend architecture**, **real-time communicat
 
 ---
 
+# 🐻 State Management
+
+Chat Sphere uses **Zustand** for lightweight and scalable global state management.
+
+### Zustand is used for:
+
+* Authentication state handling
+* Real-time chat synchronization
+* Selected user management
+* Online users tracking
+* Typing indicator updates
+* Socket event handling
+* Sound & UI preferences
+
+### Why Zustand?
+
+* Minimal boilerplate
+* Lightweight and performant
+* Cleaner than Redux for this scale
+* Easy integration with Socket.IO
+* Better developer experience
+
+---
+
 # 🚀 Features
 
 ## 🔐 Authentication & Security
@@ -122,7 +146,7 @@ The project focuses on **scalable backend architecture**, **real-time communicat
 
 # 🏗️ Project Architecture
 
-```bash id="tzn07y"
+```bash id="k5c4p0"
 CHAT-SPHERE/
 │
 ├── backend/
@@ -150,9 +174,23 @@ CHAT-SPHERE/
 
 # ⚙️ Environment Variables
 
+# ⚙️ Environment Variables Setup
+
 Create a `.env` file inside the `backend/` folder.
 
-```env id="1lww6z"
+### 📂 Path
+
+```bash id="onqavh"
+CHAT-SPHERE/
+└── backend/
+    └── .env
+```
+
+---
+
+# 📝 Example `.env` File
+
+```env id="jsh8x9"
 PORT=3000
 
 MONGO_URI=your_mongodb_uri
@@ -177,11 +215,43 @@ ARCJET_ENV=development
 
 ---
 
+# 🔑 How to Get Each Environment Variable
+
+| Variable                | Purpose                     | Where to Get It                                                                  |
+| ----------------------- | --------------------------- | -------------------------------------------------------------------------------- |
+| `PORT`                  | Backend server port         | Set manually (example: `3000`)                                                   |
+| `MONGO_URI`             | MongoDB database connection | From [MongoDB Atlas](https://www.mongodb.com/cloud/atlas?utm_source=chatgpt.com) |
+| `JWT_SECRET`            | JWT token security key      | Create manually (random secret string)                                           |
+| `RESEND_API_KEY`        | Email sending service       | From [Resend](https://resend.com?utm_source=chatgpt.com)                         |
+| `EMAIL_FROM`            | Sender email address        | Your verified Resend email                                                       |
+| `EMAIL_FROM_NAME`       | Sender display name         | Set manually                                                                     |
+| `CLIENT_URL`            | Frontend URL                | Your frontend localhost or deployed URL                                          |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary media storage    | From [Cloudinary](https://cloudinary.com?utm_source=chatgpt.com)                 |
+| `CLOUDINARY_API_KEY`    | Cloudinary API access       | Cloudinary Dashboard                                                             |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret       | Cloudinary Dashboard                                                             |
+| `ARCJET_KEY`            | Security & rate limiting    | From [Arcjet](https://arcjet.com?utm_source=chatgpt.com)                         |
+| `ARCJET_ENV`            | Arcjet environment          | Set manually (`development`)                                                     |
+
+---
+
+
+# ⚠️ Important Notes
+
+## ❌ Never Push `.env` to GitHub
+
+Add this in `.gitignore`
+
+```bash id="xpg2u4"
+.env
+```
+
+---
+
 # 📦 Installation & Setup
 
 ## 1️⃣ Clone Repository
 
-```bash id="k7o4ot"
+```bash id="4ltyfe"
 git clone https://github.com/kashodhanprinkal/CHAT-SPHERE.git
 
 cd CHAT-SPHERE
@@ -193,14 +263,14 @@ cd CHAT-SPHERE
 
 ### Backend
 
-```bash id="s31azm"
+```bash id="ujwycd"
 cd backend
 npm install
 ```
 
 ### Frontend
 
-```bash id="vnr7xt"
+```bash id="dl5m5d"
 cd frontend
 npm install
 ```
@@ -211,13 +281,13 @@ npm install
 
 ### Start Backend
 
-```bash id="n7g8g6"
+```bash id="j0dmy7"
 npm run dev
 ```
 
 ### Start Frontend
 
-```bash id="m0a95z"
+```bash id="khhly3"
 npm run dev
 ```
 
@@ -274,13 +344,14 @@ npm run dev
 
 # ⚡ Engineering Highlights
 
-✅ Real-time WebSocket Architecture
-✅ Optimistic UI Rendering
-✅ Modular Backend Structure
-✅ Reusable Frontend Components
-✅ Scalable Folder Structure
-✅ Responsive Modern UI
-✅ Production-Oriented Development Practices
+*✅ Real-time WebSocket Architecture
+*✅ Optimistic UI Rendering
+*✅ Modular Backend Structure
+*✅ Reusable Frontend Components
+*✅ Lightweight Global State Management using Zustand
+*✅ Scalable Folder Structure
+*✅ Responsive Modern UI
+*✅ Production-Oriented Development Practices
 
 ---
 
@@ -309,7 +380,7 @@ Full Stack MERN Developer passionate about building scalable real-time applicati
 * Real-Time Systems with Socket.IO
 * REST API Development
 * Authentication & Security
-* State Management
+* State Management with Zustand
 * Responsive UI Engineering
 * Backend Architecture
 * Cloud Integration
@@ -334,7 +405,7 @@ This project demonstrates the ability to:
 
 If you like this project:
 
-```bash id="k5y0h0"
+```bash id="ap50l2"
 ⭐ Star the repository
 🍴 Fork the project
 📢 Share with others
