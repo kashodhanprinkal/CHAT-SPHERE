@@ -1,4 +1,4 @@
-import { Profiler } from "react";
+
 import User from "../models/User.js";
 import bcrypt from "bcryptjs"
 import { generateToken } from "../lib/utils.js";

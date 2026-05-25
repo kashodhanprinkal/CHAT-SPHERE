@@ -22,21 +22,22 @@ function ChatContainer() {
   } = useChatStore();
 
   const { authUser } = useAuthStore();
+
   const messageEndRef = useRef(null);
 
   // =========================
-  // 📩 FETCH + SOCKET SUBSCRIBE
+  // 📩 FETCH + SOCKET
   // =========================
   useEffect(() => {
     if (selectedUser?._id) {
       getMessagesByUserId(selectedUser._id);
 
       subscribeToMessages();
-      subscribeToTyping(); // ✅ typing start
+      subscribeToTyping();
 
       return () => {
         unsubscribeFromMessages();
-        unsubscribeFromTyping(); // ✅ cleanup
+        unsubscribeFromTyping();
       };
     }
   }, [selectedUser]);
@@ -46,21 +47,25 @@ function ChatContainer() {
   // =========================
   useEffect(() => {
     if (messageEndRef.current) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+      messageEndRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
     }
   }, [messages]);
 
   return (
     <div className="flex flex-col h-full">
-      {/* HEADER */}
+
+      {/* ================= HEADER ================= */}
       <ChatHeader />
 
-      {/* =========================
-          💬 MESSAGES
-      ========================= */}
+      {/* ================= MESSAGES ================= */}
       <div className="flex-1 px-6 overflow-y-auto py-8">
+
         {messages.length > 0 && !isMessagesLoading ? (
+
           <div className="max-w-3xl mx-auto space-y-6">
+
             {messages.map((msg) => (
               <div
                 key={msg._id}
@@ -70,6 +75,7 @@ function ChatContainer() {
                     : "chat-start"
                 }`}
               >
+
                 <div
                   className={`chat-bubble relative ${
                     msg.senderId === authUser?._id
@@ -77,7 +83,8 @@ function ChatContainer() {
                       : "bg-slate-800 text-slate-200"
                   }`}
                 >
-                  {/* 📸 Image */}
+
+                  {/* ================= IMAGE ================= */}
                   {msg.image && (
                     <img
                       src={msg.image}
@@ -86,48 +93,81 @@ function ChatContainer() {
                     />
                   )}
 
-                  {/* 💬 Text */}
-                  {msg.text && <p>{msg.text}</p>}
+                  {/* ================= TEXT ================= */}
+                  {msg.text && (
+                    <p className="break-words">
+                      {msg.text}
+                    </p>
+                  )}
 
-                  {/* ⏰ Time */}
+                  {/* ================= VOICE ================= */}
+                  {msg.messageType === "voice" &&
+                    msg.voiceUrl && (
+                      <div className="mt-2">
+
+                        <audio
+                          controls
+                          className="w-56 rounded-lg"
+                        >
+                          <source
+                            src={msg.voiceUrl}
+                          />
+                        </audio>
+
+                        {/* Duration */}
+                        {msg.voiceDuration > 0 && (
+                          <p className="text-xs opacity-70 mt-1">
+                            🎤 {msg.voiceDuration}s
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                  {/* ================= TIME ================= */}
                   <span className="block text-xs opacity-70 mt-2">
-                    {new Date(msg.createdAt).toLocaleTimeString([], {
+                    {new Date(
+                      msg.createdAt
+                    ).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
                   </span>
+
                 </div>
               </div>
             ))}
 
             {/* 🔽 Scroll anchor */}
             <div ref={messageEndRef} />
+
           </div>
+
         ) : isMessagesLoading ? (
+
           <MessagesLoadingSkeleton />
+
         ) : (
-          <NoChatHistoryPlaceholder name={selectedUser?.fullName} />
+
+          <NoChatHistoryPlaceholder
+            name={selectedUser?.fullName}
+          />
+
         )}
+
       </div>
 
-      {/* =========================
-          ✍️ TYPING INDICATOR
-      ========================= */}
-      {/* =========================
-    ✍️ TYPING INDICATOR
-========================= */}
-{typingUser?.senderName && (
-  <div className="px-6 pb-1">
-    <p className="text-xs text-cyan-400 italic animate-pulse">
-      {typingUser.senderName} is typing...
-    </p>
-  </div>
-)}
+      {/* ================= TYPING ================= */}
+      {typingUser?.senderName && (
+        <div className="px-6 pb-1">
+          <p className="text-xs text-cyan-400 italic animate-pulse">
+            {typingUser.senderName} is typing...
+          </p>
+        </div>
+      )}
 
-      {/* =========================
-          📤 INPUT
-      ========================= */}
+      {/* ================= INPUT ================= */}
       <MessageInput />
+
     </div>
   );
 }

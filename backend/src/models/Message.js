@@ -7,18 +7,42 @@ const messageSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+
     text: {
       type: String,
       trim: true,
       maxlength: 2000,
+      default: "",
     },
+
     image: {
       type: String,
+      default: "",
+    },
+
+    // NEW
+    messageType: {
+      type: String,
+      enum: ["text", "image", "voice"],
+      default: "text",
+    },
+
+    // NEW
+    voiceUrl: {
+      type: String,
+      default: "",
+    },
+
+    // NEW
+    voiceDuration: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }

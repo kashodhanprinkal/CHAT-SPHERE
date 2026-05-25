@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import useKeyboardSound from "../hooks/useKeyboardSound";
 import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
+import VoiceRecorder from "./VoiceRecorder";
 import toast from "react-hot-toast";
 import { ImageIcon, SendIcon, X } from "lucide-react";
 
@@ -170,6 +171,8 @@ function MessageInput() {
         >
           <ImageIcon className="w-5 h-5" />
         </button>
+
+<VoiceRecorder receiverId={selectedUser?._id} />
 
         {/* SEND BUTTON */}
         <button
