@@ -2,7 +2,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs"
 import { generateToken } from "../lib/utils.js";
-import { sendWelcomeEmail } from "../emails/emailHandlers.js";
+import { sendWelcomeEmail, sendResetEmail } from "../emails/emailHandlers.js";
 import cloudinary from "../lib/cloudinary.js";
 import crypto from "crypto";
 
@@ -167,13 +167,11 @@ export const forgotPassword = async (req, res) => {
 
     const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
-    // ❌ COMMENT EMAIL FOR NOW
-    // await sendResetEmail(user.email, user.fullName, resetUrl);
+    // ✅ SEND EMAIL NOW
+    await sendResetEmail(user.email, user.fullName, resetUrl);
 
-    // ✅ RETURN URL DIRECTLY (for testing)
     res.status(200).json({
-      message: "Reset link generated",
-      resetUrl
+      message: "Reset link sent to your email"
     });
 
   } catch (error) {

@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import dotenv from "dotenv";
-import { createWelcomeEmailTemplate } from "./emailTemplates.js";
+import { createWelcomeEmailTemplate,createResetPasswordEmailTemplate } from "./emailTemplates.js";
 
 dotenv.config();
 
@@ -33,18 +33,20 @@ export const sendWelcomeEmail = async (email, name, clientURL) => {
 
 export const sendResetEmail = async (email, name, url) => {
   try {
-    await transporter.sendMail({
+    const { data, error } = await resendClient.emails.send({
+      from: `${sender.name} <${sender.email}>`,
       to: email,
-      subject: "Password Reset Request",
-      html: `
-        <h3>Hello ${name}</h3>
-        <p>You requested a password reset.</p>
-        <p>Click below link to reset password:</p>
-        <a href="${url}">${url}</a>
-        <p>This link will expire in 10 minutes.</p>
-      `,
+      subject: "Password Reset Request 🔐",
+      html: createResetPasswordEmailTemplate(name, url),
     });
+
+    if (error) {
+      console.error("Error sending reset email:", error);
+      throw new Error("Failed to send reset email");
+    }
+
+    console.log("Reset email sent successfully:", data);
   } catch (error) {
-    console.error("Error sending reset email:", error);
+    console.error("Email Handler Error:", error);
   }
 };

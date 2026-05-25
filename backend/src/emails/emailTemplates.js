@@ -90,3 +90,93 @@ export function createWelcomeEmailTemplate(name, clientURL) {
   </html>
   `;
 }
+
+export function createResetPasswordEmailTemplate(name, url) {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Reset</title>
+  </head>
+
+  <body style="margin:0; padding:0; background-color:#f4f6fb; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+    <div style="max-width:600px; margin:40px auto; background:white; border-radius:14px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.08);">
+
+      <!-- Header -->
+      <div style="background:linear-gradient(135deg,#ff4ecd,#6a11cb); padding:35px; text-align:center;">
+        <div style="width:70px; height:70px; margin:0 auto 15px; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px;">
+          🔐
+        </div>
+
+        <h1 style="color:white; margin:0; font-weight:600; font-size:26px;">
+          Password Reset Request
+        </h1>
+      </div>
+
+      <!-- Content -->
+      <div style="padding:35px; color:#444; line-height:1.6;">
+
+        <p style="font-size:18px;">
+          Hello <strong style="color:#6a11cb;">${name}</strong>,
+        </p>
+
+        <p>
+          We received a request to reset your password for your CHATTER-BOX account.
+        </p>
+
+        <p>
+          If you did not request this, you can safely ignore this email.
+        </p>
+
+        <!-- Warning Box -->
+        <div style="background:#fff4f4; padding:18px; border-left:5px solid #ff4ecd; border-radius:10px; margin:25px 0;">
+          <p style="margin:0; font-weight:600;">
+            ⚠️ This link will expire in 10 minutes for your security.
+          </p>
+        </div>
+
+        <!-- Button -->
+        <div style="text-align:center; margin:35px 0;">
+          <a href="${url}" 
+            style="background:linear-gradient(135deg,#6a11cb,#ff4ecd);
+            color:white;
+            text-decoration:none;
+            padding:14px 32px;
+            border-radius:40px;
+            font-weight:600;
+            font-size:15px;
+            display:inline-block;
+            box-shadow:0 6px 14px rgba(106,17,203,0.25);">
+            Reset Password
+          </a>
+        </div>
+
+        <p style="font-size:13px; color:#777;">
+          If the button doesn’t work, copy and paste this link:
+        </p>
+
+        <p style="font-size:13px; word-break:break-all; color:#6a11cb;">
+          ${url}
+        </p>
+
+        <p style="margin-top:25px;">
+          Stay safe,<br />
+          <strong>CHATTER-BOX Security Team</strong>
+        </p>
+
+      </div>
+
+      <!-- Footer -->
+      <div style="background:#fafafa; text-align:center; padding:20px; font-size:12px; color:#888;">
+        <p style="margin:0;">© 2026 CHATTER-BOX. All rights reserved.</p>
+      </div>
+
+    </div>
+
+  </body>
+  </html>
+  `;
+}
