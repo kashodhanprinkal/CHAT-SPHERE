@@ -3,7 +3,7 @@ import http from "http";
 import express from "express";
 import dotenv from "dotenv";
 import { socketAuthMiddleware } from "../middleware/socket.auth.middleware.js";
-
+import { registerCallEvents } from "./call.socket.js";
 dotenv.config();
 
 const app = express();
@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
   });
 
   // =========================
-
+  registerCallEvents(socket);
   socket.on("disconnect", () => {
     console.log("❌ user disconnected:", socket.user.fullName);
 
