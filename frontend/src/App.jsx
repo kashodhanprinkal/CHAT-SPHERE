@@ -7,12 +7,19 @@ import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-
 import { useAuthStore } from "./store/useAuthStore.js";
-
+import useCallListeners from "./hooks/useCallListeners";
+import useWebRTCListeners from "./hooks/useWebRTCListeners";
 import PageLoader from "./components/PageLoader";
+import IncomingCallModal from "./components/IncomingCallModal";
+import CallScreen from "./components/CallScreen.jsx";
 
 function App() {
+  // ==================================================
+  // 📞 CALL LISTENERS
+  // ==================================================
+  useCallListeners();
+  useWebRTCListeners();
 
   // ==================================================
   // 📦 AUTH STORE
@@ -38,7 +45,6 @@ function App() {
   }
 
   return (
-
     // ==================================================
     // 🌍 MAIN APP CONTAINER
     // - overflow-hidden prevents page overflow
@@ -389,6 +395,12 @@ function App() {
 
         }}
       />
+
+      {/* ==================================================
+          📞 CALL COMPONENTS
+      ================================================== */}
+      <IncomingCallModal />
+      <CallScreen />
 
     </div>
   );

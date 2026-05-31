@@ -3,6 +3,8 @@ import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { useAuthStore } from "./useAuthStore";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 export const useChatStore = create((set, get) => ({
   allContacts: [],
   chats: [],
@@ -15,6 +17,10 @@ export const useChatStore = create((set, get) => ({
   // ✅ Typing state
   typingUser: null,
 
+  // ✅ Call logs state
+  callLogs: [],
+  isCallLogsLoading: false,
+
   // ✅ Sound
   isSoundEnabled:
     JSON.parse(localStorage.getItem("isSoundEnabled")) === true,
@@ -22,13 +28,10 @@ export const useChatStore = create((set, get) => ({
   // =========================
   // 🔊 TOGGLE SOUND
   // =========================
-   toggleSound: () => {
+  toggleSound: () => {
     localStorage.setItem("isSoundEnabled", !get().isSoundEnabled);
     set({ isSoundEnabled: !get().isSoundEnabled });
   },
-
-  setActiveTab: (tab) => set({ activeTab: tab }),
-  setSelectedUser: (selectedUser) => set({ selectedUser }),
 
   // =========================
   // 🧭 UI STATE
@@ -45,14 +48,9 @@ export const useChatStore = create((set, get) => ({
 
     try {
       const res = await axiosInstance.get("/messages/contacts");
-
-      set({
-        allContacts: res.data,
-      });
+      set({ allContacts: res.data });
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to fetch contacts"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch contacts");
     } finally {
       set({ isUsersLoading: false });
     }
@@ -66,14 +64,9 @@ export const useChatStore = create((set, get) => ({
 
     try {
       const res = await axiosInstance.get("/messages/chats");
-
-      set({
-        chats: res.data,
-      });
+      set({ chats: res.data });
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to fetch chats"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch chats");
     } finally {
       set({ isUsersLoading: false });
     }
@@ -87,14 +80,9 @@ export const useChatStore = create((set, get) => ({
 
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
-
-      set({
-        messages: res.data,
-      });
+      set({ messages: res.data });
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || error.message
-      );
+      toast.error(error.response?.data?.message || error.message);
     } finally {
       set({ isMessagesLoading: false });
     }
@@ -120,34 +108,40 @@ export const useChatStore = create((set, get) => ({
       isOptimistic: true,
     };
 
-    set({
-      messages: [...messages, optimisticMessage],
-    });
+    set({ messages: [...messages, optimisticMessage] });
 
     try {
-      const res = await axiosInstance.post(
-        `/messages/send/${selectedUser._id}`,
-        messageData
-      );
+      const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
 
       // ✅ Replace optimistic message
       set({
-        messages: get().messages.map((msg) =>
-          msg._id === tempId ? res.data : msg
-        ),
+        messages: get().messages.map((msg) => (msg._id === tempId ? res.data : msg)),
       });
     } catch (error) {
       // ❌ Remove failed optimistic message
       set({
-        messages: get().messages.filter(
-          (msg) => msg._id !== tempId
-        ),
+        messages: get().messages.filter((msg) => msg._id !== tempId),
       });
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  },
 
-      toast.error(
-        error.response?.data?.message ||
-          "Something went wrong"
-      );
+  // =========================
+  // 📞 CALL LOGS
+  // =========================
+  getCallLogsByUserId: async (userId) => {
+    console.log("📞 Fetching call logs for user:", userId);
+    set({ isCallLogsLoading: true });
+    
+    try {
+      const res = await axiosInstance.get(`/calls/${userId}`);
+      console.log("✅ Call logs fetched:", res.data);
+      set({ callLogs: res.data });
+    } catch (error) {
+      console.error("Error fetching call logs:", error);
+      set({ callLogs: [] });
+    } finally {
+      set({ isCallLogsLoading: false });
     }
   },
 
@@ -156,36 +150,27 @@ export const useChatStore = create((set, get) => ({
   // =========================
   subscribeToMessages: () => {
     const { selectedUser, isSoundEnabled } = get();
-
     if (!selectedUser) return;
 
     const socket = useAuthStore.getState().socket;
-
     if (!socket) return;
 
     // ✅ Prevent duplicate listeners
     socket.off("newMessage");
 
     socket.on("newMessage", (newMessage) => {
-      const isMessageFromSelectedUser =
-        newMessage.senderId === selectedUser._id;
+      const isMessageFromSelectedUser = newMessage.senderId === selectedUser._id;
 
       if (!isMessageFromSelectedUser) return;
 
       const currentMessages = get().messages;
 
-      set({
-        messages: [...currentMessages, newMessage],
-      });
+      set({ messages: [...currentMessages, newMessage] });
 
       // 🔊 Play sound
       if (isSoundEnabled) {
-        const notificationSound = new Audio(
-          "/sounds/notification.mp3"
-        );
-
+        const notificationSound = new Audio("/sounds/notification.mp3");
         notificationSound.currentTime = 0;
-
         notificationSound.play().catch((e) => {
           console.log("Audio play failed", e);
         });
@@ -198,50 +183,83 @@ export const useChatStore = create((set, get) => ({
   // =========================
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
-
     if (!socket) return;
-
     socket.off("newMessage");
   },
 
   // =========================
   // ✍️ SUBSCRIBE TYPING
   // =========================
-subscribeToTyping: () => {
-  const socket = useAuthStore.getState().socket;
+  subscribeToTyping: () => {
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
 
-  if (!socket) return;
+    socket.off("typing");
 
-  socket.off("typing");
-
-  socket.on("typing", (data) => {
-    console.log("Typing event:", data);
-
-    set({
-      typingUser: {
-        senderName: data?.senderName || "Someone",
-      },
+    socket.on("typing", (data) => {
+      console.log("Typing event:", data);
+      set({ typingUser: { senderName: data?.senderName || "Someone" } });
+      
+      // auto clear after 2 sec
+      setTimeout(() => {
+        set({ typingUser: null });
+      }, 2000);
     });
-
-    // auto clear after 2 sec
-    setTimeout(() => {
-      set({ typingUser: null });
-    }, 2000);
-  });
-},
+  },
 
   // =========================
   // ❌ UNSUBSCRIBE TYPING
   // =========================
   unsubscribeFromTyping: () => {
-  const socket = useAuthStore.getState().socket;
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
+    socket.off("typing");
+    set({ typingUser: null });
+  },
 
-  if (!socket) return;
+  // =========================
+  // 📞 SUBSCRIBE TO CALL LOGS
+  // =========================
+  subscribeToCallLogs: () => {
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
 
-  socket.off("typing");
+    socket.off("new-call-log");
 
-  set({
-    typingUser: null,
-  });
-},
+    socket.on("new-call-log", (callLog) => {
+      console.log("📞 New call log received:", callLog);
+      const { selectedUser } = get();
+      
+      // Only add if it's related to the selected user
+      if (selectedUser && 
+          (callLog.callerId === selectedUser._id || callLog.receiverId === selectedUser._id)) {
+        set((state) => ({
+          callLogs: [callLog, ...state.callLogs].slice(0, 50)
+        }));
+      }
+    });
+  },
+
+  // =========================
+  // ❌ UNSUBSCRIBE FROM CALL LOGS
+  // =========================
+  unsubscribeFromCallLogs: () => {
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
+    socket.off("new-call-log");
+  },
+
+  // =========================
+  // 🧹 RESET
+  // =========================
+  reset: () => {
+    set({
+      messages: [],
+      selectedUser: null,
+      typingUser: null,
+      callLogs: [],
+      allContacts: [],
+      chats: [],
+    });
+  },
 }));
