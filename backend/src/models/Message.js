@@ -39,11 +39,27 @@ const messageSchema = new mongoose.Schema(
       default: "",
     },
 
-    // NEW
     voiceDuration: {
       type: Number,
       default: 0,
     },
+    
+    deliveredAt : {
+      type : Date,
+      default: null
+    },
+
+    reatAt: {
+      type : Date,
+      default : null
+    },
+
+    status: {
+      type: String ,
+      enum:['sent','delivered','read'],
+      default: 'sent'
+    }
+    
   },
   { timestamps: true }
 );

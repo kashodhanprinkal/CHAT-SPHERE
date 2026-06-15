@@ -5,16 +5,12 @@ import { get } from "mongoose";
 import { getReceiverSocketId } from "../lib/socket.js";
 import { io } from "../lib/socket.js"; 
 
-
-
 export const getAllContacts = async (req, res) => {
   try {
     const loggedInUserId = req.user._id;
-
     const filteredUsers = await User.find({
       _id: { $ne: loggedInUserId },
     }).select("-password");
-
     res.status(200).json(filteredUsers);
   } catch (error) {
     console.log("error in getallcontacts:", error);
@@ -26,14 +22,13 @@ export const getMessageByUserId = async (req, res) => {
   try {
     const myId = req.user._id;
     const { id: userToChatId } = req.params;
-
-    const messags = await Message.find({
+    const messages = await Message.find({
       $or: [
         { senderId: myId, receiverId: userToChatId },
         { senderId: userToChatId, receiverId: myId },
       ],
     });
-    res.status(200).json(messags);
+    res.status(200).json(messages);
   } catch (error) {
     console.log("error in getMessages contoller:", error.message);
     res.status(500).json({ error: "internal server error" });
@@ -43,7 +38,6 @@ export const getMessageByUserId = async (req, res) => {
 export const sendMessage = async (req, res) => {
   try {
     const { text, image, voiceUrl, voiceDuration } = req.body;
-
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
@@ -62,84 +56,72 @@ export const sendMessage = async (req, res) => {
     }
 
     // Check receiver exists
-    const receiverExists = await User.exists({
-      _id: receiverId,
-    });
-
+    const receiverExists = await User.exists({ _id: receiverId });
     if (!receiverExists) {
-      return res.status(404).json({
-        message: "Receiver not found",
-      });
+      return res.status(404).json({ message: "Receiver not found" });
     }
 
     let imageUrl = "";
-
-    // Upload image if exists
     if (image) {
-      const uploadResponse =
-        await cloudinary.uploader.upload(image);
-
+      const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
 
     // Detect message type
     let messageType = "text";
+    if (imageUrl) messageType = "image";
+    if (voiceUrl) messageType = "voice";
 
-    if (imageUrl) {
-      messageType = "image";
-    }
-
-    if (voiceUrl) {
-      messageType = "voice";
-    }
-
-    // Create message
+    // Create message with status 'sent'
     const newMessage = new Message({
-  senderId,
-  receiverId,
-  text: text || "",
-  image: imageUrl || "",
-  messageType: voiceUrl ? "voice" : imageUrl ? "image" : "text",
-  voiceUrl: voiceUrl || "",
-  voiceDuration: voiceDuration || 0,
-});
+      senderId,
+      receiverId,
+      text: text || "",
+      image: imageUrl || "",
+      messageType,
+      voiceUrl: voiceUrl || "",
+      voiceDuration: voiceDuration || 0,
+      status: 'sent',
+      deliveredAt: null,
+      readAt: null
+    });
 
     await newMessage.save();
 
-    // SOCKET.IO
-    const receiverSocketId =
-      getReceiverSocketId(receiverId);
+    // Populate sender info
+    const populatedMessage = await Message.findById(newMessage._id)
+      .populate("senderId", "fullName profilePic")
+      .populate("receiverId", "fullName profilePic");
 
+    // SOCKET.IO
+    const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit(
-        "newMessage",
-        newMessage
-      );
+      io.to(receiverSocketId).emit("newMessage", populatedMessage);
+      
+      // Auto mark as delivered if receiver is online
+      await Message.findByIdAndUpdate(newMessage._id, {
+        status: 'delivered',
+        deliveredAt: new Date()
+      });
+      
+      populatedMessage.status = 'delivered';
+      populatedMessage.deliveredAt = new Date();
     }
 
-    res.status(201).json(newMessage);
-
+    res.status(201).json(populatedMessage);
   } catch (error) {
-    console.log(
-      "error in sendMessage controller",
-      error.message
-    );
-
-    res.status(500).json({
-      message: "Internal server error",
-    });
+    console.log("error in sendMessage controller", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 export const getChatPartners = async (req, res) => {
   try {
     const loggedInUserId = req.user._id.toString();
-
     const messages = await Message.find({
       $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
     });
 
-    // ✅ Get unique partner IDs
     const chatPartnerIds = [
       ...new Set(
         messages.map((msg) =>
@@ -150,7 +132,6 @@ export const getChatPartners = async (req, res) => {
       ),
     ];
 
-    // ✅ Fetch users
     const chatPartners = await User.find({
       _id: { $in: chatPartnerIds },
     }).select("-password");
@@ -162,56 +143,118 @@ export const getChatPartners = async (req, res) => {
   }
 };
 
-// ADD THIS FUNCTION FOR VOICE MESSAGES
 export const sendVoiceMessage = async (req, res) => {
   try {
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
     const { duration } = req.body;
 
-    // Check if voice file exists
     if (!req.file) {
       return res.status(400).json({ error: "No voice file provided" });
     }
 
-    // Upload to Cloudinary (audio treated as video)
     const result = await cloudinary.uploader.upload(req.file.path, {
-      resource_type: "video", // Important: audio uses 'video' type
+      resource_type: "video",
       folder: "voice-notes",
       format: "mp3"
     });
 
-    // Create voice message in database
     const newMessage = new Message({
       senderId,
       receiverId,
       messageType: "voice",
       voiceUrl: result.secure_url,
       voiceDuration: duration || 0,
+      status: 'sent',
+      deliveredAt: null,
+      readAt: null
     });
 
     await newMessage.save();
 
-    // Populate sender info (to send back to frontend)
     const populatedMessage = await Message.findById(newMessage._id)
       .populate("senderId", "fullName profilePic")
       .populate("receiverId", "fullName profilePic");
 
-    // Send real-time notification via Socket.IO
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", populatedMessage);
+      
+      // Auto mark as delivered if receiver is online
+      await Message.findByIdAndUpdate(newMessage._id, {
+        status: 'delivered',
+        deliveredAt: new Date()
+      });
+      
+      populatedMessage.status = 'delivered';
+      populatedMessage.deliveredAt = new Date();
     }
 
-    // Delete temporary file from server
     const fs = await import("fs");
     fs.unlinkSync(req.file.path);
 
-    // Send success response back to sender
     res.status(201).json(populatedMessage);
-    
   } catch (error) {
     console.error("Error in sendVoiceMessage: ", error.message);
     res.status(500).json({ error: "Failed to send voice message" });
+  }
+};
+
+// ✅ NEW FUNCTION - Get message status for a conversation
+export const getMessageStatus = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentUserId = req.user._id;
+    
+    const messages = await Message.find({
+      $or: [
+        { senderId: currentUserId, receiverId: userId },
+        { senderId: userId, receiverId: currentUserId }
+      ]
+    }).select('status deliveredAt readAt senderId receiverId createdAt');
+    
+    res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error getting message status:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ✅ NEW FUNCTION - Mark messages as delivered
+export const markMessagesAsDelivered = async (req, res) => {
+  try {
+    const { senderId } = req.params;
+    const receiverId = req.user._id;
+    
+    await Message.updateMany(
+      { senderId: senderId, receiverId: receiverId, status: 'sent' },
+      { status: 'delivered', deliveredAt: new Date() }
+    );
+    
+    res.status(200).json({ message: "Messages marked as delivered" });
+  } catch (error) {
+    console.error("Error marking messages as delivered:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ✅ NEW FUNCTION - Mark messages as read
+export const markMessagesAsRead = async (req, res) => {
+  try {
+    const { senderId } = req.params;
+    const receiverId = req.user._id;
+    
+    const result = await Message.updateMany(
+      { senderId: senderId, receiverId: receiverId, status: 'delivered' },
+      { status: 'read', readAt: new Date() }
+    );
+    
+    res.status(200).json({ 
+      message: "Messages marked as read",
+      count: result.modifiedCount 
+    });
+  } catch (error) {
+    console.error("Error marking messages as read:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
