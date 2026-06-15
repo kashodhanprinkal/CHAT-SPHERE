@@ -25,24 +25,18 @@ export const useChatStore = create((set, get) => ({
   isSoundEnabled:
     JSON.parse(localStorage.getItem("isSoundEnabled")) === true,
 
-  // =========================
   // 🔊 TOGGLE SOUND
-  // =========================
   toggleSound: () => {
     localStorage.setItem("isSoundEnabled", !get().isSoundEnabled);
     set({ isSoundEnabled: !get().isSoundEnabled });
   },
 
-  // =========================
   // 🧭 UI STATE
-  // =========================
   setActiveTab: (tab) => set({ activeTab: tab }),
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),
 
-  // =========================
   // 👥 GET CONTACTS
-  // =========================
   getAllContacts: async () => {
     set({ isUsersLoading: true });
 
@@ -56,9 +50,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // =========================
   // 💬 GET CHAT PARTNERS
-  // =========================
   getMyChatPartners: async () => {
     set({ isUsersLoading: true });
 
@@ -72,9 +64,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // =========================
   // 📩 GET MESSAGES
-  // =========================
   getMessagesByUserId: async (userId) => {
     set({ isMessagesLoading: true });
 
@@ -88,9 +78,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // =========================
   // 📤 SEND MESSAGE
-  // =========================
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     const { authUser } = useAuthStore.getState();
@@ -126,9 +114,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // =========================
   // 📞 CALL LOGS
-  // =========================
   getCallLogsByUserId: async (userId) => {
     console.log("📞 Fetching call logs for user:", userId);
     set({ isCallLogsLoading: true });
@@ -145,9 +131,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  // =========================
   // 🔔 REALTIME MESSAGE SUBSCRIBE
-  // =========================
   subscribeToMessages: () => {
     const { selectedUser, isSoundEnabled } = get();
     if (!selectedUser) return;
@@ -178,18 +162,14 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
-  // =========================
   // ❌ UNSUBSCRIBE MESSAGES
-  // =========================
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
     socket.off("newMessage");
   },
 
-  // =========================
   // ✍️ SUBSCRIBE TYPING
-  // =========================
   subscribeToTyping: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
@@ -207,9 +187,7 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
-  // =========================
   // ❌ UNSUBSCRIBE TYPING
-  // =========================
   unsubscribeFromTyping: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
@@ -217,9 +195,7 @@ export const useChatStore = create((set, get) => ({
     set({ typingUser: null });
   },
 
-  // =========================
   // 📞 SUBSCRIBE TO CALL LOGS
-  // =========================
   subscribeToCallLogs: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
@@ -240,18 +216,14 @@ export const useChatStore = create((set, get) => ({
     });
   },
 
-  // =========================
   // ❌ UNSUBSCRIBE FROM CALL LOGS
-  // =========================
   unsubscribeFromCallLogs: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
     socket.off("new-call-log");
   },
 
-  // =========================
   // 🧹 RESET
-  // =========================
   reset: () => {
     set({
       messages: [],
@@ -262,4 +234,77 @@ export const useChatStore = create((set, get) => ({
       chats: [],
     });
   },
+
+// Update single message status
+updateMessageStatus: (messageId, status, deliveredAt, readAt) => {
+  set((state) => ({
+    messages: state.messages.map(msg => 
+      msg._id === messageId 
+        ? { ...msg, status, deliveredAt, readAt }
+        : msg
+    )
+  }));
+},
+
+// Update all messages from a specific user
+updateMessagesStatusByUser: (senderId, newStatus) => {
+  set((state) => ({
+    messages: state.messages.map(msg => {
+      if (msg.senderId === senderId && 
+          ((newStatus === 'delivered' && msg.status === 'sent') ||
+           (newStatus === 'read' && msg.status !== 'read'))) {
+        return { 
+          ...msg, 
+          status: newStatus,
+          deliveredAt: newStatus === 'delivered' ? new Date() : msg.deliveredAt,
+          readAt: newStatus === 'read' ? new Date() : msg.readAt
+        };
+      }
+      return msg;
+    })
+  }));
+},
+
+// Mark messages as read
+markMessagesAsRead: async (senderId) => {
+  const socket = useAuthStore.getState().socket;
+  if (socket) {
+    socket.emit('mark-messages-read', { senderId });
+    
+    try {
+      await axiosInstance.put(`/messages/read/${senderId}`);
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+    }
+    
+    // Update local state optimistically
+    set((state) => ({
+      messages: state.messages.map(msg => {
+        if (msg.senderId === senderId && msg.status === 'delivered') {
+          return { ...msg, status: 'read', readAt: new Date() };
+        }
+        return msg;
+      })
+    }));
+  }
+},
+
+// Fetch message status
+fetchMessageStatus: async (userId) => {
+  try {
+    const res = await axiosInstance.get(`/messages/status/${userId}`);
+    set((state) => ({
+      messages: state.messages.map(msg => {
+        const statusData = res.data.find(s => s._id === msg._id);
+        if (statusData) {
+          return { ...msg, ...statusData };
+        }
+        return msg;
+      })
+    }));
+  } catch (error) {
+    console.error("Error fetching message status:", error);
+  }
+},
+
 }));
