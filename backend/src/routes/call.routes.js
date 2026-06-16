@@ -1,5 +1,5 @@
 import express from "express";
-import { Call } from "../models/Call.model.js";
+import { Call } from "../models/Call.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();

@@ -1,7 +1,7 @@
 // lib/call.socket.js
 
 import { io, getReceiverSocketId } from "./socket.js";
-import { Call } from "../models/Call.model.js";
+import { Call } from "../models/Call.js";
 
 // Store call start times in memory (in production, use Redis)
 const callSessions = new Map();
