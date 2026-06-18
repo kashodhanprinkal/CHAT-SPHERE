@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 import BorderAnimatedContainer from "../components/BorderAnimatedContainer";
 import {
   MessageCircleIcon,
@@ -14,6 +15,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 function LoginPage() {
+  const navigate = useNavigate()//
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,9 +24,10 @@ function LoginPage() {
 
   const { login, isLoggingIn } = useAuthStore();
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async (e) => {
     e.preventDefault();
-    login(formData);
+    await login(formData);
+    navigate("/")
   };
 
   return (

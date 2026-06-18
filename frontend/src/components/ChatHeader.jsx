@@ -3,8 +3,10 @@ import { useChatStore } from "../store/useChatStore";
 import { useAuthStore } from "../store/useAuthStore";
 import useCallStore from "../store/useCallStore";
 import { XIcon, Phone, Video } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function ChatHeader() {
+  const navigate = useNavigate();
   const { selectedUser, setSelectedUser } = useChatStore();
   const { onlineUsers, authUser } = useAuthStore();
   const socket = useAuthStore((state) => state.socket);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance } from "../lib/axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { 
@@ -40,8 +40,8 @@ const ResetPassword = () => {
     try {
       setLoading(true);
 
-      await axios.post(
-        `http://localhost:3000/api/auth/reset-password/${token}`,
+      await axiosInstance.post(
+        `/auth/reset-password/${token}`,
         { password }
       );
 

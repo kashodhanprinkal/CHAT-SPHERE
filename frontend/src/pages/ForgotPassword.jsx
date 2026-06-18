@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance } from "../lib/axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { MailIcon, LoaderIcon, ArrowLeftIcon, SendIcon, KeyRoundIcon } from "lucide-react";
@@ -15,8 +15,8 @@ const ForgotPassword = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        `http://localhost:3000/api/auth/forgot-password`,
+      const res = await axiosInstance.post(
+        `/auth/forgot-password`,
         { email }
       );
 

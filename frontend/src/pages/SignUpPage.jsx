@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 import BorderAnimatedContainer from "../components/BorderAnimatedContainer";
 import {
   MessageCircleIcon,
@@ -17,6 +18,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 function SignUpPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -47,9 +49,10 @@ function SignUpPage() {
     checkPasswordStrength(newPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    signup(formData);
+    await signup(formData);
+    navigate("/")
   };
 
   const getStrengthColor = () => {
