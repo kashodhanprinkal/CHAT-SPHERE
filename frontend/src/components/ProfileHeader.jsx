@@ -2,6 +2,9 @@ import React, { useState, useRef } from "react";
 import { LogOutIcon, VolumeOffIcon, Volume2Icon } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
+import Notification from "./NotificationToggle";
+import NotificationToggle from "./NotificationToggle";
+
 
 function ProfileHeader() {
   const { logout, authUser, updateProfile, onlineUsers } = useAuthStore();
@@ -87,6 +90,8 @@ function ProfileHeader() {
         {/* RIGHT SECTION */}
         <div className="flex gap-4 items-center">
           
+          <NotificationToggle />
+
           {/* Logout */}
           <button
             className="text-slate-400 hover:text-slate-200 transition-colors"
