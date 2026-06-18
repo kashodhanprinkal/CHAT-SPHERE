@@ -1,2 +1,9 @@
-node_modules
+# Frontend .gitignore
 .env
+.env.local
+.env.production
+
+# Backend .gitignore
+.env
+.env.local
+.env.production
