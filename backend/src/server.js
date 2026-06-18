@@ -13,7 +13,7 @@ import messageRoutes from "./routes/message.route.js";
 import { connectDB } from "./lib/db.js";
 import { app, server } from "./lib/socket.js";
 import callRoutes from "./routes/call.routes.js";
-
+import notificationRoutes from "./routes/notification.routes.js"
 dotenv.config();
 
 app.use(cors({

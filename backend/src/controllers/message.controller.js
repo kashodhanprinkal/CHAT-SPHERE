@@ -4,6 +4,8 @@ import cloudinary from "../lib/cloudinary.js";
 import { get } from "mongoose";
 import { getReceiverSocketId } from "../lib/socket.js";
 import { io } from "../lib/socket.js"; 
+import { sendNewMessageNotification } from "../lib/notification.service.js";
+
 
 export const getAllContacts = async (req, res) => {
   try {
@@ -108,6 +110,15 @@ export const sendMessage = async (req, res) => {
       populatedMessage.deliveredAt = new Date();
     }
 
+     try {
+      const sender = await User.findById(senderId).select("fullName profilePic");
+      await sendNewMessageNotification(receiverId, newMessage, sender);
+      console.log("✅ Push notification sent to receiver");
+    } catch (error) {
+      console.error("❌ Push notification error:", error.message);
+      // Don't fail the request if notification fails
+    }
+
     res.status(201).json(populatedMessage);
   } catch (error) {
     console.log("error in sendMessage controller", error.message);
@@ -188,6 +199,15 @@ export const sendVoiceMessage = async (req, res) => {
       
       populatedMessage.status = 'delivered';
       populatedMessage.deliveredAt = new Date();
+    }
+
+     // ✅ SEND PUSH NOTIFICATION FOR VOICE MESSAGE
+    try {
+      const sender = await User.findById(senderId).select("fullName profilePic");
+      await sendNewMessageNotification(receiverId, newMessage, sender);
+      console.log("✅ Push notification sent for voice message");
+    } catch (error) {
+      console.error("❌ Push notification error:", error.message);
     }
 
     const fs = await import("fs");
