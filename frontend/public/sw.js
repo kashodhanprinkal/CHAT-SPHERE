@@ -16,16 +16,22 @@ self.addEventListener("activate", (event) => {
 // 📨 HANDLE PUSH NOTIFICATIONS
 // ============================================================
 self.addEventListener("push", (event) => {
+  // Don't do anything if no data
+  if (!event.data) return;
+
   let data = {};
 
   try {
     data = event.data.json();
   } catch (error) {
-    data = {
-      title: "📩 New notification",
-      body: "You have a new message",
-      icon: "/favicon.ico",
-    };
+    console.log("❌ Invalid push data:", error);
+    return;
+  }
+
+  // ✅ Check if notification permission is granted
+  if (self.Notification.permission !== "granted") {
+    console.log("❌ Notification permission not granted");
+    return;
   }
 
   const options = {
@@ -35,9 +41,6 @@ self.addEventListener("push", (event) => {
     vibrate: data.vibrate || [100, 50, 100],
     data: data.data || {},
     requireInteraction: data.requireInteraction || false,
-    actions: [
-      { action: "open", title: "Open Chat" },
-    ],
   };
 
   event.waitUntil(
@@ -56,13 +59,11 @@ self.addEventListener("notificationclick", (event) => {
 
   event.waitUntil(
     clients.matchAll({ type: "window" }).then((clientList) => {
-      // If there's already a window open, focus it
       for (const client of clientList) {
         if (client.url.includes("/") && "focus" in client) {
           return client.focus();
         }
       }
-      // Otherwise open a new window
       if (clients.openWindow) {
         return clients.openWindow(url);
       }
