@@ -1,6 +1,6 @@
 import webpush from "web-push";
 import dotenv from "dotenv";
-import Notification from "../models/Notification.js";
+import Notification from "../models/Notification.js"; // ✅ Importing Notification
 
 dotenv.config();
 
@@ -16,7 +16,8 @@ webpush.setVapidDetails(
 // ============================================================
 export const sendPushNotification = async (userId, payload) => {
   try {
-    const subscriptions = await NotificationSubscription.find({ userId });
+    // ✅ Using Notification (not NotificationSubscription)
+    const subscriptions = await Notification.find({ userId });
 
     if (!subscriptions || subscriptions.length === 0) {
       console.log(`No subscriptions found for user ${userId}`);
@@ -39,7 +40,8 @@ export const sendPushNotification = async (userId, payload) => {
         results.push({ success: true, endpoint: subscription.endpoint });
       } catch (error) {
         if (error.statusCode === 410 || error.statusCode === 404) {
-          await NotificationSubscription.findByIdAndDelete(subscription._id);
+          // ✅ Using Notification
+          await Notification.findByIdAndDelete(subscription._id);
           console.log("Removed invalid subscription");
         }
         results.push({ success: false, error: error.message });

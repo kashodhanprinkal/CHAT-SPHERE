@@ -22,9 +22,6 @@ const notificationSchema = new mongoose.Schema(
 
 notificationSchema.index({ userId: 1, endpoint: 1 }, { unique: true });
 
-const Notification = mongoose.model(
-  "Notification",
-  notificationSchema
-);
+const Notification = mongoose.model("Notification", notificationSchema);
 
 export default Notification;
