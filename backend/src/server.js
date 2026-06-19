@@ -13,7 +13,7 @@ import messageRoutes from "./routes/message.route.js";
 import { connectDB } from "./lib/db.js";
 import { app, server } from "./lib/socket.js";
 import callRoutes from "./routes/call.routes.js";
-
+import notificationRoutes from "./routes/notification.routes.js"
 dotenv.config();
 
 app.use(cors({
@@ -34,6 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/calls", callRoutes);
+app.use("/api/notifications",notificationRoutes)
 
 server.listen(PORT, () => {
   console.log("Server is running on port: " + PORT);

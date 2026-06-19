@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { LogOutIcon, VolumeOffIcon, Volume2Icon } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
+import NotificationToggle from "./NotificationToggle";
 
 function ProfileHeader() {
   const { logout, authUser, updateProfile, onlineUsers } = useAuthStore();
@@ -11,10 +12,8 @@ function ProfileHeader() {
   const fileInputRef = useRef(null);
   const soundRef = useRef(new Audio("/sounds/mouse-click.mp3"));
 
-  // ✅ Online status
   const isOnline = onlineUsers?.includes(authUser?._id);
 
-  // ✅ Handle image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -40,25 +39,20 @@ function ProfileHeader() {
         
         {/* LEFT SECTION */}
         <div className="flex items-center gap-3">
-          
-          {/* Avatar */}
           <div className={`avatar ${isOnline ? "online" : "offline"}`}>
             <button
               className="size-14 rounded-full overflow-hidden relative group"
-              onClick={() => fileInputRef.current.click()}
+              onClick={() => fileInputRef.current?.click()}
             >
               <img
                 src={selectedImg || authUser?.profilePic || "/avatar.png"}
                 alt="user"
                 className="size-full object-cover"
               />
-
-              {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                 <span className="text-white text-xs">Change</span>
               </div>
             </button>
-
             <input
               type="file"
               accept="image/*"
@@ -68,26 +62,23 @@ function ProfileHeader() {
             />
           </div>
 
-          {/* Name + Status */}
           <div>
             <h3 className="text-slate-200 font-medium text-base max-w-[180px] truncate">
               {authUser?.fullName}
             </h3>
-
-            <p
-              className={`text-xs ${
-                isOnline ? "text-green-400" : "text-slate-400"
-              }`}
-            >
+            <p className={`text-xs ${isOnline ? "text-green-400" : "text-slate-400"}`}>
               {isOnline ? "🟢 Online" : "⚫ Offline"}
             </p>
           </div>
         </div>
 
-        {/* RIGHT SECTION */}
+        {/* RIGHT SECTION - BUTTONS */}
         <div className="flex gap-4 items-center">
           
-          {/* Logout */}
+          {/* ✅ NOTIFICATION TOGGLE - BELL ICON */}
+          <NotificationToggle />
+
+          {/* Logout Button */}
           <button
             className="text-slate-400 hover:text-slate-200 transition-colors"
             onClick={logout}
@@ -112,7 +103,6 @@ function ProfileHeader() {
             )}
           </button>
         </div>
-
       </div>
     </div>
   );
