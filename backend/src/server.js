@@ -34,6 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/calls", callRoutes);
+app.use("/api/notifications",notificationRoutes)
 
 server.listen(PORT, () => {
   console.log("Server is running on port: " + PORT);

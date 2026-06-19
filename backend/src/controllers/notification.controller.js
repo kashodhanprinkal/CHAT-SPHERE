@@ -1,11 +1,9 @@
 import Notification from "../models/Notification.js";
 import { sendPushNotification } from "../lib/notification.service.js";
 
-// ============================================================
-// 📝 SAVE SUBSCRIPTION
-// ============================================================
 export const saveSubscription = async (req, res) => {
   try {
+    console.log("📝 Save subscription called");
     const userId = req.user._id;
     const { subscription } = req.body;
 
@@ -13,7 +11,7 @@ export const saveSubscription = async (req, res) => {
       return res.status(400).json({ message: "Invalid subscription data" });
     }
 
-    const existing = await NotificationSubscription.findOne({
+    const existing = await Notification.findOne({
       userId,
       endpoint: subscription.endpoint,
     });
@@ -22,7 +20,7 @@ export const saveSubscription = async (req, res) => {
       return res.status(200).json({ message: "Subscription already exists" });
     }
 
-    const newSubscription = new NotificationSubscription({
+    const newSubscription = new Notification({
       userId,
       endpoint: subscription.endpoint,
       keys: {
@@ -32,33 +30,24 @@ export const saveSubscription = async (req, res) => {
     });
 
     await newSubscription.save();
-
-    // Send test notification
-    await sendPushNotification(userId, {
-      title: "🔔 Notifications Enabled",
-      body: "You will now receive notifications for new messages and calls.",
-      icon: "/favicon.ico",
-    });
+    console.log("✅ Subscription saved successfully");
 
     res.status(201).json({
       message: "Subscription saved successfully",
       subscription: newSubscription,
     });
   } catch (error) {
-    console.error("Error saving subscription:", error);
+    console.error("❌ Error saving subscription:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// ============================================================
-// ❌ REMOVE SUBSCRIPTION
-// ============================================================
 export const removeSubscription = async (req, res) => {
   try {
     const userId = req.user._id;
     const { endpoint } = req.body;
 
-    await NotificationSubscription.findOneAndDelete({ userId, endpoint });
+    await Notification.findOneAndDelete({ userId, endpoint });
     res.status(200).json({ message: "Subscription removed" });
   } catch (error) {
     console.error("Error removing subscription:", error);
@@ -66,9 +55,6 @@ export const removeSubscription = async (req, res) => {
   }
 };
 
-// ============================================================
-// 🧪 TEST NOTIFICATION
-// ============================================================
 export const sendTestNotification = async (req, res) => {
   try {
     const result = await sendPushNotification(req.user._id, {
