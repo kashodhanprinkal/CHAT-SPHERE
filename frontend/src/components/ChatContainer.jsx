@@ -204,6 +204,7 @@ function ChatContainer() {
               <MessageStatus 
                 status={item.status} 
                 isOwn={item.senderId === authUser?._id} 
+                createdAt={item.createdAt}
               />
             </div>
           </div>
