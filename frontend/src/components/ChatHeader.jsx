@@ -4,6 +4,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import useCallStore from "../store/useCallStore";
 import { XIcon, Phone, Video } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getLastSeen } from "../lib/time";
 
 function ChatHeader() {
   const navigate = useNavigate();
@@ -127,9 +128,9 @@ function ChatHeader() {
         </div>
         <div>
           <h3 className="text-slate-200 font-medium">{selectedUser.fullName}</h3>
-          <p className={`text-sm ${isOnline ? "text-green-400" : "text-slate-400"}`}>
-            {isOnline ? "🟢 Online" : "⚫ Offline"}
-          </p>
+         <p className={`text-xs ${isOnline ? "text-green-400" : "text-slate-400"}`}>
+  {isOnline ? "🟢 Online" : `⚫ Last seen ${getLastSeen(selectedUser?.lastSeen)}`}
+</p>
         </div>
       </div>
 
