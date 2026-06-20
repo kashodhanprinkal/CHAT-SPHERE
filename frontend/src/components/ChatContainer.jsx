@@ -7,7 +7,10 @@ import MessageInput from "./MessageInput";
 import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
 import CallLogMessage from "./CallLogMessage";
 import MessageStatus from "./MessageStatus";
+import { formatMessageTime, getDateGroupLabel, isSameDay
 
+
+ } from "../lib/time";
 function ChatContainer() {
   const {
     selectedUser,
@@ -138,70 +141,84 @@ function ChatContainer() {
 
           <div className="max-w-3xl mx-auto space-y-6">
 
-            {chatItems.map((item, index) => (
-              item.type === 'message' ? (
-                // Message display
-                <div
-                  key={item._id || index}
-                  className={`chat ${item.senderId === authUser?._id ? "chat-end" : "chat-start"}`}
-                >
-                  <div
-                    className={`chat-bubble relative ${
-                      item.senderId === authUser?._id
-                        ? "bg-cyan-600 text-white"
-                        : "bg-slate-800 text-slate-200"
-                    }`}
-                  >
-                    {/* Image */}
-                    {item.image && (
-                      <img
-                        src={item.image}
-                        alt="shared"
-                        className="rounded-lg mb-2 max-w-xs object-cover"
-                      />
-                    )}
+            {chatItems.map((item, index) => {
+  // Check if we should show date group
+  const itemDate = item.createdAt || item.startedAt;
+  const prevDate = index > 0 ? (chatItems[index - 1]?.createdAt || chatItems[index - 1]?.startedAt) : null;
+  const showDateGroup = index === 0 || !isSameDay(itemDate, prevDate);
+  
+  return (
+    <React.Fragment key={item._id || index}>
+      {/* Date Group */}
+      {showDateGroup && itemDate && (
+        <div className="flex justify-center my-4">
+          <span className="text-xs text-slate-400 bg-slate-700/30 px-4 py-1 rounded-full">
+            {getDateGroupLabel(itemDate)}
+          </span>
+        </div>
+      )}
+      
+      {item.type === 'message' ? (
+        // Message display
+        <div
+          className={`chat ${item.senderId === authUser?._id ? "chat-end" : "chat-start"}`}
+        >
+          <div
+            className={`chat-bubble relative ${
+              item.senderId === authUser?._id
+                ? "bg-cyan-600 text-white"
+                : "bg-slate-800 text-slate-200"
+            }`}
+          >
+            {/* Image */}
+            {item.image && (
+              <img
+                src={item.image}
+                alt="shared"
+                className="rounded-lg mb-2 max-w-xs object-cover"
+              />
+            )}
 
-                    {/* Text */}
-                    {item.text && (
-                      <p className="break-words">{item.text}</p>
-                    )}
+            {/* Text */}
+            {item.text && (
+              <p className="break-words">{item.text}</p>
+            )}
 
-                    {/* Voice Message */}
-                    {item.messageType === "voice" && item.voiceUrl && (
-                      <div className="mt-2">
-                        <audio controls className="w-56 rounded-lg">
-                          <source src={item.voiceUrl} />
-                        </audio>
-                        {item.voiceDuration > 0 && (
-                          <p className="text-xs opacity-70 mt-1">🎤 {item.voiceDuration}s</p>
-                        )}
-                      </div>
-                    )}
+            {/* Voice Message */}
+            {item.messageType === "voice" && item.voiceUrl && (
+              <div className="mt-2">
+                <audio controls className="w-56 rounded-lg">
+                  <source src={item.voiceUrl} />
+                </audio>
+                {item.voiceDuration > 0 && (
+                  <p className="text-xs opacity-70 mt-1">🎤 {item.voiceDuration}s</p>
+                )}
+              </div>
+            )}
 
-                    {/* Time + Status */}
-                    <div className="flex items-center justify-end gap-1 mt-1">
-                      <span className="text-xs opacity-70">
-                        {new Date(item.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                      <MessageStatus 
-                        status={item.status} 
-                        isOwn={item.senderId === authUser?._id} 
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                // Call log display
-                <CallLogMessage 
-                  key={item._id || index}
-                  callLog={item}
-                  isOwn={item.callerId === authUser?._id}
-                />
-              )
-            ))}
+            {/* ✅ Time + Status */}
+            <div className="flex items-center justify-end gap-1 mt-1">
+              <span className="text-xs opacity-70">
+                {formatMessageTime(item.createdAt)}
+              </span>
+              <MessageStatus 
+                status={item.status} 
+                isOwn={item.senderId === authUser?._id} 
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Call log display
+        <CallLogMessage 
+          key={item._id || index}
+          callLog={item}
+          isOwn={item.callerId === authUser?._id}
+        />
+      )}
+    </React.Fragment>
+  );
+})}
 
             {/* Scroll anchor */}
             <div ref={messageEndRef} />
