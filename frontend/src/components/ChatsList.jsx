@@ -3,6 +3,8 @@ import { useChatStore } from "../store/useChatStore";
 import UserLoadingSkeleton from "./UserLoadingSkeleton";
 import NoChatsFound from "./NoChatsFound";
 import { useAuthStore } from "../store/useAuthStore";
+import { formatChatTime } from "../lib/time"; 
+
 
 function ChatsList() {
   const {
@@ -25,35 +27,19 @@ function ChatsList() {
   if (!chats || chats.length === 0) return <NoChatsFound />;
 
   return (
-    <div className="space-y-3 p-4">
-      {chats.map((chat) => (
-        <div
-          key={chat._id}
-          className="bg-cyan-500/10 p-4 rounded-lg cursor-pointer hover:bg-cyan-500/20 transition-colors"
-          onClick={() => setSelectedUser(chat)}
-        >
-         <div className="flex items-center gap-3">
-  {/* Online / Offline status */}
-  <div
-    className={`avatar ${
-      onlineUsers.includes(chat._id) ? "online" : "offline"
-    }`}
-  >
-    <div className="w-12 rounded-full">
-      <img
-        src={chat.profilePic || "/avatar.png"}
-        alt={chat.fullName}
-      />
-    </div>
+    <div className="flex justify-between items-start">
+  <div className="flex-1 min-w-0">
+    <h4 className="text-slate-200 font-medium truncate">
+      {chat.participants?.[0]?.fullName || "Unknown"}
+    </h4>
+    <p className="text-sm text-slate-400 truncate">
+      {chat.lastMessage?.text || "No messages yet"}
+    </p>
   </div>
-
-  <h4 className="text-slate-200 font-medium truncate">
-    {chat.fullName}
-  </h4>
+  <span className="text-xs text-slate-500 whitespace-nowrap ml-2">
+    {chat.lastMessage?.createdAt ? formatChatTime(chat.lastMessage.createdAt) : ""}
+  </span>
 </div>
-        </div>
-      ))}
-    </div>
   );
 }
 
