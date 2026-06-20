@@ -1,5 +1,7 @@
 import React from 'react';
 import { Check, CheckCheck } from 'lucide-react';
+import { formatFullDate, formatMessageTime } from '../lib/time';
+
 
 const MessageStatus = ({ status, isOwn }) => {
   // Only show status for messages sent by current user
@@ -35,9 +37,12 @@ const MessageStatus = ({ status, isOwn }) => {
   };
   
   return (
-    <div className="inline-flex items-center ml-1">
-      {getStatusIcon()}
-    </div>
+    <div 
+  className="flex items-center gap-1 ml-1" 
+  title={formatFullDate(createdAt) + " at " + formatMessageTime(createdAt)}
+>
+  {getStatusIcon()}
+</div>
   );
 };
 
