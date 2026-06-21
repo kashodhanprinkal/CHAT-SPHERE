@@ -1,5 +1,3 @@
-// lib/call.socket.js
-
 import { io, getReceiverSocketId } from "./socket.js";
 import { Call } from "../models/Call.js";
 

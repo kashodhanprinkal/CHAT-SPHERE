@@ -77,7 +77,7 @@ io.on("connection", async (socket) => {
     console.error('Error marking messages as delivered:', error);
   }
 
-  // ✍️ TYPING INDICATOR
+  // TYPING INDICATOR
   socket.on("typing", ({ receiverId, senderName }) => {
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
