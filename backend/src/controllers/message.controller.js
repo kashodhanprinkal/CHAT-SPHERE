@@ -129,25 +129,58 @@ export const sendMessage = async (req, res) => {
 export const getChatPartners = async (req, res) => {
   try {
     const loggedInUserId = req.user._id.toString();
+
+    // Get all messages where user is involved, sorted by latest
     const messages = await Message.find({
       $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
-    });
+    }).sort({ createdAt: -1 });
 
-    const chatPartnerIds = [
-      ...new Set(
-        messages.map((msg) =>
-          msg.senderId.toString() === loggedInUserId
-            ? msg.receiverId.toString()
-            : msg.senderId.toString(),
-        ),
-      ),
-    ];
+    // Get unique partner IDs with latest message
+    const chatMap = new Map();
 
+    for (const msg of messages) {
+      const partnerId = msg.senderId.toString() === loggedInUserId 
+        ? msg.receiverId.toString() 
+        : msg.senderId.toString();
+      
+      // Only store the latest message for each partner
+      if (!chatMap.has(partnerId)) {
+        chatMap.set(partnerId, {
+          lastMessage: msg,
+          lastMessageAt: msg.createdAt,
+        });
+      }
+    }
+
+    // Get all unique partner IDs
+    const partnerIds = [...chatMap.keys()];
+
+    // Fetch users
     const chatPartners = await User.find({
-      _id: { $in: chatPartnerIds },
+      _id: { $in: partnerIds },
     }).select("-password");
 
-    res.status(200).json(chatPartners);
+    // Combine user data with last message
+    const result = chatPartners.map(user => {
+      const chatData = chatMap.get(user._id.toString());
+      return {
+        _id: user._id,
+        fullName: user.fullName,
+        profilePic: user.profilePic,
+        participants: [user, req.user],
+        lastMessage: chatData?.lastMessage || null,
+        lastMessageAt: chatData?.lastMessageAt || null,
+      };
+    });
+
+    // Sort by latest message
+    result.sort((a, b) => {
+      const dateA = a.lastMessageAt ? new Date(a.lastMessageAt) : new Date(0);
+      const dateB = b.lastMessageAt ? new Date(b.lastMessageAt) : new Date(0);
+      return dateB - dateA;
+    });
+
+    res.status(200).json(result);
   } catch (error) {
     console.log("error in getChatPartners:", error);
     res.status(500).json({ message: "server error" });
