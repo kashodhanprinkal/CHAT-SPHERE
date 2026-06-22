@@ -1,6 +1,3 @@
-console.log("🔔 NotificationToggle component loaded!");
-console.log("Notification.permission:", Notification.permission);
-
 import React, { useState, useEffect } from "react";
 import { Bell, BellRing, BellOff, Loader } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
@@ -9,72 +6,92 @@ import toast from "react-hot-toast";
 const NotificationToggle = () => {
   const [loading, setLoading] = useState(false);
   const [permission, setPermission] = useState("default");
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
-  // ✅ Check permission on mount and when it changes
+  // ✅ Check permission and subscription status
   useEffect(() => {
-    const checkPermission = () => {
-      if (!("Notification" in window)) {
-        setPermission("unsupported");
-        return;
-      }
-      setPermission(Notification.permission);
-    };
-
-    checkPermission();
-
-    // ✅ Listen for permission changes (works in Chrome/Firefox)
-    const handleChange = () => {
-      setPermission(Notification.permission);
-    };
-
-    // Add event listener for permission change
-    document.addEventListener("visibilitychange", handleChange);
-
-    // Check permission every 2 seconds (fallback for some browsers)
-    const interval = setInterval(() => {
-      const current = Notification.permission;
-      setPermission((prev) => {
-        if (prev !== current) {
-          console.log("Permission changed:", current);
-          return current;
+    const check = async () => {
+      if ("Notification" in window) {
+        const perm = Notification.permission;
+        setPermission(perm);
+        console.log("📢 Permission:", perm);
+        
+        // Check if subscribed
+        if (perm === "granted") {
+          try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.getSubscription();
+            setIsSubscribed(!!subscription);
+            console.log("📢 Subscribed:", !!subscription);
+          } catch (err) {
+            console.error("Error checking subscription:", err);
+          }
         }
-        return prev;
-      });
-    }, 2000);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleChange);
-      clearInterval(interval);
+      }
     };
+    check();
+
+    const interval = setInterval(() => {
+      if ("Notification" in window) {
+        const current = Notification.permission;
+        setPermission(prev => {
+          if (prev !== current) {
+            console.log("🔄 Permission changed to:", current);
+            return current;
+          }
+          return prev;
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  // ✅ Handle click
-  const handleClick = async () => {
-    console.log("🔔 Bell clicked!");
-    console.log("Current permission:", permission);
-    
+  const handleToggle = async () => {
+    console.log("🔔 Toggle clicked!");
     if (loading) return;
     setLoading(true);
 
     try {
-      // If already granted, send test
-      if (permission === "granted") {
-        console.log("✅ Sending test notification...");
-        await axiosInstance.post("/notifications/test");
-        toast.success("🔔 Test notification sent!");
+      // ✅ If subscribed, unsubscribe (turn OFF)
+      if (isSubscribed) {
+        console.log("🔕 Turning OFF notifications...");
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+          await subscription.unsubscribe();
+          setIsSubscribed(false);
+          toast.success("🔕 Notifications turned off");
+        }
         setLoading(false);
         return;
       }
 
-      // Request permission
+      // ✅ If not subscribed, enable (turn ON)
+      if (permission === "granted") {
+        console.log("🔔 Turning ON notifications...");
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+        });
+        
+        await axiosInstance.post("/notifications/subscribe", { subscription });
+        setIsSubscribed(true);
+        await axiosInstance.post("/notifications/test");
+        toast.success("🔔 Notifications enabled!");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Request permission (first time)
       const result = await Notification.requestPermission();
-      console.log("📢 Permission result:", result);
+      console.log("📢 Result:", result);
       setPermission(result);
-      
+
       if (result === "granted") {
         toast.success("🔔 Notifications enabled!");
         
-        // Register service worker
         try {
           const registration = await navigator.serviceWorker.register("/sw.js");
           const subscription = await registration.pushManager.subscribe({
@@ -83,31 +100,33 @@ const NotificationToggle = () => {
           });
           
           await axiosInstance.post("/notifications/subscribe", { subscription });
-          console.log("✅ Subscription saved");
-          
+          setIsSubscribed(true);
           await axiosInstance.post("/notifications/test");
           toast.success("🔔 Test notification sent!");
-        } catch (swError) {
-          console.error("Service worker error:", swError);
+        } catch (err) {
+          console.error("SW Error:", err);
         }
-      } else if (result === "denied") {
-        toast.error("Notifications blocked");
       } else {
-        toast.error("Permission not granted");
+        toast.error(result === "denied" ? "Notifications blocked" : "Permission not granted");
       }
     } catch (error) {
       console.error("❌ Error:", error);
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Render based on permission
-  console.log("🔔 Rendering with permission:", permission);
+  // ✅ Render based on permission and subscription
+  if (permission === "denied") {
+    return (
+      <button className="text-slate-400 opacity-50 cursor-not-allowed" title="Notifications blocked">
+        <BellOff className="size-5" />
+      </button>
+    );
+  }
 
-  // Not supported
-  if (permission === "unsupported") {
+  if (permission === "unsupported" || !("Notification" in window)) {
     return (
       <button className="text-slate-400 opacity-50 cursor-not-allowed" title="Not supported">
         <BellOff className="size-5" />
@@ -115,29 +134,16 @@ const NotificationToggle = () => {
     );
   }
 
-  // Denied
-  if (permission === "denied") {
-    return (
-      <button
-        className="text-slate-400 opacity-50 cursor-not-allowed"
-        title="Notifications blocked"
-        onClick={() => toast.error("Enable in browser settings")}
-      >
-        <BellOff className="size-5" />
-      </button>
-    );
-  }
-
-  // ✅ Button
   return (
     <button
-      onClick={handleClick}
+      onClick={handleToggle}
       disabled={loading}
       className="text-slate-400 hover:text-cyan-400 transition-colors disabled:opacity-50"
+      title={isSubscribed ? "Turn off notifications" : "Turn on notifications"}
     >
       {loading ? (
         <Loader className="size-5 animate-spin" />
-      ) : permission === "granted" ? (
+      ) : isSubscribed ? (
         <BellRing className="size-5 text-cyan-400" />
       ) : (
         <Bell className="size-5" />
