@@ -3,7 +3,6 @@ import { sendPushNotification } from "../lib/notification.service.js";
 
 export const saveSubscription = async (req, res) => {
   try {
-    console.log("📝 Save subscription called");
     const userId = req.user._id;
     const { subscription } = req.body;
 

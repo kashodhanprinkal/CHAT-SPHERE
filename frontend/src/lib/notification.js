@@ -1,11 +1,5 @@
 import { axiosInstance } from "./axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-
-// ============================================================
-// 🔔 NOTIFICATION FUNCTIONS
-// ============================================================
-
 export const isNotificationSupported = () => {
   return "Notification" in window && "serviceWorker" in navigator;
 };
@@ -15,9 +9,7 @@ export const getPermission = () => {
   return Notification.permission;
 };
 
-export const isGranted = () => {
-  return getPermission() === "granted";
-};
+export const isGranted = () => getPermission() === "granted";
 
 export const requestPermission = async () => {
   if (!isNotificationSupported()) return "unsupported";
@@ -85,16 +77,3 @@ export const sendTestNotification = async () => {
     throw error;
   }
 };
-
-console.log("✅ notification.js loaded successfully");
-console.log("✅ notification.js loaded successfully");
-console.log("Exports:", {
-  isNotificationSupported,
-  getPermission,
-  isGranted,
-  requestPermission,
-  registerServiceWorker,
-  getSubscription,
-  saveSubscription,
-  sendTestNotification,
-});
