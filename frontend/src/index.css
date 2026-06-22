@@ -106,3 +106,312 @@
 .message-status {
   animation: statusFade 0.2s ease-out;
 }
+
+/* ============================================================
+   🌓 THEME VARIABLES – Professional Light & Dark
+   ============================================================ */
+
+/* ☀️ LIGHT THEME (Default) – Clean & Modern */
+:root {
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --bg-input: #f1f5f9;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-white: #ffffff;
+  
+  --border-color: #e2e8f0;
+  --border-light: #f1f5f9;
+  
+  --shadow-color: rgba(0, 0, 0, 0.06);
+  --shadow-heavy: rgba(0, 0, 0, 0.10);
+  
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  
+  --scrollbar-track: #e2e8f0;
+  --scrollbar-thumb: #94a3b8;
+  
+  --accent: #06b6d4;
+  --accent-hover: #0891b2;
+  --accent-light: rgba(6, 182, 212, 0.12);
+  
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  
+  --avatar-border: #e2e8f0;
+  --input-placeholder: #94a3b8;
+}
+
+/* 🌙 DARK THEME – Smooth & Easy on Eyes */
+[data-theme="dark"] {
+  --bg-primary: #0c0f15;
+  --bg-secondary: #14181f;
+  --bg-card: #181e28;
+  --bg-hover: #1e2633;
+  --bg-input: #1a2029;
+  
+  --text-primary: #e8edf5;
+  --text-secondary: #9aa8b9;
+  --text-muted: #6b7a8d;
+  --text-white: #ffffff;
+  
+  --border-color: #242d3d;
+  --border-light: #1a2029;
+  
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --shadow-heavy: rgba(0, 0, 0, 0.6);
+  
+  --glass-bg: rgba(20, 24, 31, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  
+  --scrollbar-track: #1a2029;
+  --scrollbar-thumb: #3d4a5e;
+  
+  --accent: #06b6d4;
+  --accent-hover: #22d3ee;
+  --accent-light: rgba(6, 182, 212, 0.15);
+  
+  --success: #34d399;
+  --error: #f87171;
+  --warning: #fbbf24;
+  
+  --avatar-border: #242d3d;
+  --input-placeholder: #6b7a8d;
+}
+
+/* ============================================================
+   🌐 GLOBAL STYLES
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================================
+   🎨 SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ============================================================
+   🪟 GLASS EFFECT
+   ============================================================ */
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+/* ============================================================
+   💬 CHAT BUBBLES
+   ============================================================ */
+
+.chat-bubble {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.chat-bubble.own {
+  background: var(--accent);
+  color: white;
+  border: none;
+}
+
+/* ============================================================
+   📝 INPUT FIELDS
+   ============================================================ */
+
+input, textarea, select {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: all 0.3s ease;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--input-placeholder);
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+/* ============================================================
+   🎯 BUTTONS
+   ============================================================ */
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-hover);
+}
+
+/* ============================================================
+   📋 CARDS
+   ============================================================ */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px var(--shadow-heavy);
+}
+
+/* ============================================================
+   🔗 LINKS
+   ============================================================ */
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* ============================================================
+   🖼️ AVATAR
+   ============================================================ */
+
+.avatar {
+  border: 2px solid var(--avatar-border);
+}
+
+.avatar.online {
+  border-color: var(--success);
+}
+
+.avatar.offline {
+  border-color: var(--text-muted);
+}
+
+/* ============================================================
+   📱 SIDEBAR
+   ============================================================ */
+
+.sidebar-item {
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.sidebar-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-item.active {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+/* ============================================================
+   🔔 BADGE
+   ============================================================ */
+
+.badge {
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 20px;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ============================================================
+   🎨 TRANSITIONS
+   ============================================================ */
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ============================================================
+   📱 RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .chat-bubble {
+    max-width: 85%;
+  }
+}

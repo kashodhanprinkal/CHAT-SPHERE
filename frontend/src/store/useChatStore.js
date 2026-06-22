@@ -307,4 +307,24 @@ fetchMessageStatus: async (userId) => {
   }
 },
 
+// frontend/src/store/useChatStore.js
+
+// Add these to your state
+theme: localStorage.getItem("theme") || "light",
+
+// Add these actions
+setTheme: (theme) => {
+  localStorage.setItem("theme", theme);
+  document.documentElement.setAttribute("data-theme", theme);
+  set({ theme });
+},
+
+toggleTheme: () => {
+  const { theme } = get();
+  const newTheme = theme === "light" ? "dark" : "light";
+  localStorage.setItem("theme", newTheme);
+  document.documentElement.setAttribute("data-theme", newTheme);
+  set({ theme: newTheme });
+},
+
 }));

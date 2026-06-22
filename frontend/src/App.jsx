@@ -14,43 +14,35 @@ import useWebRTCListeners from "./hooks/useWebRTCListeners";
 import PageLoader from "./components/PageLoader";
 import IncomingCallModal from "./components/IncomingCallModal";
 import CallScreen from "./components/CallScreen.jsx";
+import { useChatStore } from "./store/useChatStore.js";
 
 function App() {
-  // ==================================================
+  const { theme } = useChatStore();
+
+  // ✅ Apply theme on load
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   // 📞 CALL LISTENERS
-  // ==================================================
   useCallListeners();
   useWebRTCListeners();
 
-  // ==================================================
   // 📦 AUTH STORE
-  // ==================================================
-  const {
-    checkAuth,
-    isCheckingAuth,
-    authUser,
-  } = useAuthStore();
+  const { checkAuth, isCheckingAuth, authUser } = useAuthStore();
 
-  // ==================================================
   // 🔐 CHECK AUTH ON APP LOAD
-  // ==================================================
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  // ==================================================
   // ⏳ SHOW LOADER WHILE AUTH CHECKING
-  // ==================================================
   if (isCheckingAuth) {
     return <PageLoader />;
   }
 
   return (
-    <div className="h-screen overflow-y-auto overflow-x-hidden text-white relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 scroll-smooth">
-      
-      {/* ==================================================
-          ✨ ANIMATED BACKGROUND EFFECTS
-      ================================================== */}
+<div className="h-screen overflow-y-auto overflow-x-hidden relative bg-[var(--bg-primary)] text-[var(--text-primary)] scroll-smooth">
       
       {/* Animated Grid */}
       <div
@@ -96,14 +88,9 @@ function App() {
           blur-[180px] rounded-full pointer-events-none"
       />
 
-      {/* ==================================================
-          📦 MAIN LAYOUT WRAPPER
-      ================================================== */}
+      {/* MAIN LAYOUT WRAPPER */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-3 sm:px-6 py-8">
         
-        {/* ==================================================
-            🧱 GRID LAYOUT
-        ================================================== */}
         <div
           className={`
             w-full mx-auto grid gap-6 sm:gap-10 items-center
@@ -111,10 +98,7 @@ function App() {
           `}
         >
 
-          {/* ==================================================
-              ✨ LEFT BRANDING SECTION
-              (ONLY FOR LOGIN/SIGNUP)
-          ================================================== */}
+          {/* LEFT BRANDING SECTION */}
           {!authUser && (
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -122,7 +106,6 @@ function App() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="hidden lg:flex flex-col justify-center space-y-6 px-4 sm:px-8 py-8"
             >
-              {/* Status Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm w-fit">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -131,7 +114,6 @@ function App() {
                 <span className="text-xs text-slate-300">500+ Active Users</span>
               </div>
 
-              {/* Main Heading */}
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight">
                 <span className="text-white">Welcome to</span>
                 <br />
@@ -140,13 +122,11 @@ function App() {
                 </span>
               </h1>
 
-              {/* Description */}
               <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-md">
                 Connect instantly, chat seamlessly, and experience a beautifully designed
                 real-time messaging platform with crystal-clear video & voice calls.
               </p>
 
-              {/* Feature Grid */}
               <div className="grid grid-cols-2 gap-3 mt-4">
                 {[
                   { icon: "💬", text: "Real-time messaging" },
@@ -167,7 +147,6 @@ function App() {
                 ))}
               </div>
 
-              {/* Animated Stats */}
               <div className="flex gap-8 mt-6 pt-4 border-t border-white/10">
                 <div>
                   <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
@@ -189,7 +168,6 @@ function App() {
                 </div>
               </div>
 
-              {/* Animated Dots */}
               <div className="flex gap-3 mt-2">
                 <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-pink-500 to-pink-400 rounded-full animate-bounce" />
                 <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-cyan-500 to-cyan-400 rounded-full animate-bounce delay-100" />
@@ -198,14 +176,9 @@ function App() {
             </motion.div>
           )}
 
-          {/* ==================================================
-              💬 CHAT / AUTH SECTION
-          ================================================== */}
+          {/* CHAT / AUTH SECTION */}
           <div className="w-full flex items-center justify-center py-8">
             
-            {/* ==================================================
-                🪟 MAIN GLASS CONTAINER
-            ================================================== */}
             <motion.div
               initial={{ opacity: 0, y: 30, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -219,10 +192,8 @@ function App() {
                 ${authUser ? "max-w-6xl" : "max-w-md"}
               `}
             >
-              {/* Decorative Top Border Animation */}
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
               
-              {/* Inner Content */}
               <div className="relative z-10 p-2 sm:p-4">
                 <Routes>
                   <Route
@@ -246,9 +217,7 @@ function App() {
         </div>
       </div>
 
-      {/* ==================================================
-          🔔 TOAST NOTIFICATIONS
-      ================================================== */}
+      {/* TOAST NOTIFICATIONS */}
       <Toaster
         position="top-center"
         toastOptions={{
@@ -265,9 +234,7 @@ function App() {
         }}
       />
 
-      {/* ==================================================
-          📞 CALL COMPONENTS
-      ================================================== */}
+      {/* CALL COMPONENTS */}
       <IncomingCallModal />
       <CallScreen />
 

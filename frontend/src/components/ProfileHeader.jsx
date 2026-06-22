@@ -3,6 +3,7 @@ import { LogOutIcon, VolumeOffIcon, Volume2Icon } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import NotificationToggle from "./NotificationToggle";
+import ThemeToggle from "./ThemeToggle";
 
 function ProfileHeader() {
   const { logout, authUser, updateProfile, onlineUsers } = useAuthStore();
@@ -73,6 +74,7 @@ function ProfileHeader() {
         </div>
 
         {/* RIGHT SECTION - BUTTONS */}
+
         <div className="flex gap-4 items-center">
           
           {/* ✅ NOTIFICATION TOGGLE - BELL ICON */}
@@ -85,6 +87,8 @@ function ProfileHeader() {
           >
             <LogOutIcon className="size-5" />
           </button>
+
+          <ThemeToggle/>
 
           {/* Sound Toggle */}
           <button
