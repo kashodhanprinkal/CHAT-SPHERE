@@ -1,17 +1,12 @@
 import React, { useState, useRef } from "react";
-import { LogOutIcon, VolumeOffIcon, Volume2Icon } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
-import NotificationToggle from "./NotificationToggle";
-import ThemeToggle from "./ThemeToggle";
+import SettingsMenu from "./SettingsMenu";
 
 function ProfileHeader() {
-  const { logout, authUser, updateProfile, onlineUsers } = useAuthStore();
-  const { isSoundEnabled, toggleSound } = useChatStore();
-
+  const { authUser, updateProfile, onlineUsers } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
   const fileInputRef = useRef(null);
-  const soundRef = useRef(new Audio("/sounds/mouse-click.mp3"));
 
   const isOnline = onlineUsers?.includes(authUser?._id);
 
@@ -35,23 +30,23 @@ function ProfileHeader() {
   };
 
   return (
-    <div className="p-6 border-b border-slate-700/50">
+    <div className="p-4 md:p-6 border-b border-[var(--border-color)] bg-[var(--bg-secondary)]">
       <div className="flex items-center justify-between">
         
-        {/* LEFT SECTION */}
+        {/* LEFT - Avatar + Name */}
         <div className="flex items-center gap-3">
           <div className={`avatar ${isOnline ? "online" : "offline"}`}>
             <button
-              className="size-14 rounded-full overflow-hidden relative group"
+              className="size-12 rounded-full overflow-hidden relative group cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
             >
               <img
                 src={selectedImg || authUser?.profilePic || "/avatar.png"}
-                alt="user"
+                alt={authUser?.fullName}
                 className="size-full object-cover"
               />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                <span className="text-white text-xs">Change</span>
+                <span className="text-white text-xs font-medium">Change</span>
               </div>
             </button>
             <input
@@ -64,49 +59,17 @@ function ProfileHeader() {
           </div>
 
           <div>
-            <h3 className="text-slate-200 font-medium text-base max-w-[180px] truncate">
+            <h3 className="text-[var(--text-primary)] font-semibold text-base">
               {authUser?.fullName}
             </h3>
-            <p className={`text-xs ${isOnline ? "text-green-400" : "text-slate-400"}`}>
+            <p className={`text-xs ${isOnline ? "text-green-500" : "text-[var(--text-muted)]"}`}>
               {isOnline ? "🟢 Online" : "⚫ Offline"}
             </p>
           </div>
         </div>
 
-        {/* RIGHT SECTION - BUTTONS */}
-
-        <div className="flex gap-4 items-center">
-          
-          {/* ✅ NOTIFICATION TOGGLE - BELL ICON */}
-          <NotificationToggle />
-
-          {/* Logout Button */}
-          <button
-            className="text-slate-400 hover:text-slate-200 transition-colors"
-            onClick={logout}
-          >
-            <LogOutIcon className="size-5" />
-          </button>
-
-          <ThemeToggle/>
-
-          {/* Sound Toggle */}
-          <button
-            className="text-slate-400 hover:text-slate-200 transition-colors"
-            onClick={() => {
-              const audio = soundRef.current;
-              audio.currentTime = 0;
-              audio.play().catch(() => {});
-              toggleSound();
-            }}
-          >
-            {isSoundEnabled ? (
-              <Volume2Icon className="size-5" />
-            ) : (
-              <VolumeOffIcon className="size-5" />
-            )}
-          </button>
-        </div>
+        {/* RIGHT - Settings Menu */}
+        <SettingsMenu />
       </div>
     </div>
   );
