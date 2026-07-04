@@ -109,4 +109,64 @@ export const useAuthStore = create((set, get) => ({
       socket.disconnect();
     }
   },
+// 👤 PROFILE METHODS
+
+// Update name & bio
+updateProfile: async (data) => {
+  try {
+    const res = await axiosInstance.put("/auth/update-profile", data);
+    set({ authUser: res.data });
+    toast.success("Profile updated successfully");
+    return res.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to update profile");
+    throw error;
+  }
+},
+
+// Update profile picture
+updateProfilePic: async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("profilePic", file);
+    
+    const res = await axiosInstance.put("/auth/update-profile-pic", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    
+    set({ authUser: res.data });
+    toast.success("Profile picture updated");
+    return res.data;
+  } catch (error) {
+    toast.error("Failed to update profile picture");
+    throw error;
+  }
+},
+
+// Change password
+changePassword: async (passwordData) => {
+  try {
+    const res = await axiosInstance.put("/auth/change-password", passwordData);
+    toast.success("Password changed successfully");
+    return res.data;
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to change password");
+    throw error;
+  }
+},
+
+// Delete account
+deleteAccount: async () => {
+  if (!window.confirm("Are you sure? This cannot be undone!")) return;
+  
+  try {
+    await axiosInstance.delete("/auth/delete-account");
+    set({ authUser: null });
+    toast.success("Account deleted");
+    window.location.href = "/login";
+  } catch (error) {
+    toast.error("Failed to delete account");
+    throw error;
+  }
+},
 }));
