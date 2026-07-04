@@ -11,6 +11,7 @@ import {
   EyeOff,
   ArrowLeft,
   PenSquare,
+  Lock,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -109,7 +110,7 @@ const ProfilePage = () => {
 
   // Handle delete account
   const handleDeleteAccount = async () => {
-    if (window.confirm("⚠️ Are you sure? This cannot be undone!")) {
+    if (window.confirm("Are you sure? This cannot be undone!")) {
       await deleteAccount();
     }
   };
@@ -140,7 +141,9 @@ const ProfilePage = () => {
         {/* Main Card */}
         <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
           
-          {/*📸 AVATAR SECTION*/}
+          {/* ============================================================
+              📸 AVATAR SECTION
+          ============================================================ */}
           <div className="flex flex-col items-center mb-8">
             <div className="relative">
               <img
@@ -166,7 +169,9 @@ const ProfilePage = () => {
             <p className="text-sm text-[var(--text-muted)] mt-2">Click camera icon to change photo</p>
           </div>
 
-          {/*👤 PROFILE FORM*/}
+          {/* ============================================================
+              👤 PROFILE FORM
+          ============================================================ */}
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             
             {/* Full Name */}
@@ -201,9 +206,6 @@ const ProfilePage = () => {
                   placeholder="Tell us about yourself..."
                 />
               </div>
-              <p className="text-xs text-[var(--text-muted)] mt-1">
-                {profileData.bio?.length || 0}/150 characters
-              </p>
             </div>
 
             {/* Save Profile Button */}
@@ -217,8 +219,9 @@ const ProfilePage = () => {
             </button>
           </form>
 
-    
-          {/*🔐 CHANGE PASSWORD */}  🔐 CHANGE PASSWORD
+          {/* ============================================================
+              🔐 CHANGE PASSWORD
+          ============================================================ */}
           <div className="mt-8 pt-8 border-t border-[var(--border-color)]">
             <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4">Change Password</h3>
             

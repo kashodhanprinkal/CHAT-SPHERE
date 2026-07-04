@@ -15,6 +15,8 @@ import PageLoader from "./components/PageLoader";
 import IncomingCallModal from "./components/IncomingCallModal";
 import CallScreen from "./components/CallScreen.jsx";
 import { useChatStore } from "./store/useChatStore.js";
+import ProfilePage from "./pages/ProfilePage";
+
 
 function App() {
   const { theme } = useChatStore();
@@ -200,6 +202,11 @@ function App() {
                     path="/"
                     element={authUser ? <ChatPage /> : <Navigate to="/login" />}
                   />
+                      <Route
+                    path="/profile"
+                    element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
+                  />
+
                   <Route
                     path="/login"
                     element={!authUser ? <LoginPage /> : <Navigate to="/" />}
