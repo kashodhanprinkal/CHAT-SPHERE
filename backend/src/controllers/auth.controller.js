@@ -121,34 +121,69 @@ export const logout = (_, res) => {
   });
 };
 
+// controllers/auth.controller.js
+
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic } = req.body; // ✅ consistent naming
-
-    if (!profilePic) {
-      return res.status(400).json({ message: "Profile pic is required" });
-    }
-
     const userId = req.user._id;
-
-    // ☁️ Upload to Cloudinary
-    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
-      folder: "profile_pics",
-    });
-
-    // 🗄️ Update user
+    const { fullName, bio, profilePic } = req.body;
+    
+    console.log("📝 Updating profile for user:", userId);
+    console.log("📊 Data received:", { fullName, bio, hasProfilePic: !!profilePic });
+    
+    // ✅ Build update object with only provided fields
+    const updateData = {};
+    
+    // Add text fields if provided
+    if (fullName !== undefined && fullName !== null) {
+      updateData.fullName = fullName;
+    }
+    if (bio !== undefined && bio !== null) {
+      updateData.bio = bio;
+    }
+    
+    // Handle profile picture if provided
+    if (profilePic) {
+      console.log("📸 Uploading profile picture...");
+      const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+        folder: "profile_pics",
+        public_id: `user_${userId}`,
+        overwrite: true,
+        transformation: [
+          { width: 400, height: 400, crop: 'fill' },
+          { quality: 'auto' }
+        ]
+      });
+      updateData.profilePic = uploadResponse.secure_url;
+      console.log("✅ Profile picture uploaded:", uploadResponse.secure_url);
+    }
+    
+    // ✅ Check if there's anything to update
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ 
+        message: "No data provided to update" 
+      });
+    }
+    
+    console.log("📝 Updating user with:", updateData);
+    
+    // ✅ Update user with all fields
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { profilePic: uploadResponse.secure_url },
-      { new: true }
+      updateData,
+      { new: true, runValidators: true }
     ).select("-password");
-
-    // ✅ Send response
+    
+    console.log("✅ User updated successfully:", updatedUser);
+    
     res.status(200).json(updatedUser);
-
+    
   } catch (error) {
-    console.log("Error in update profile:", error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("❌ Error in updateProfile:", error.message);
+    res.status(500).json({ 
+      message: "Internal server error",
+      error: error.message 
+    });
   }
 };
 

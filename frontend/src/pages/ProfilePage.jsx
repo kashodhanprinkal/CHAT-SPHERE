@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+// ProfilePage.jsx
+import React, { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import {
@@ -34,6 +35,16 @@ const ProfilePage = () => {
     bio: authUser?.bio || "",
   });
 
+  // ✅ FIX: Update form when authUser changes
+  useEffect(() => {
+    if (authUser) {
+      setProfileData({
+        fullName: authUser.fullName || "",
+        bio: authUser.bio || "",
+      });
+    }
+  }, [authUser]); // This will run whenever authUser changes
+
   // Password form
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -46,7 +57,17 @@ const ProfilePage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await updateProfile(profileData);
+      const result = await updateProfile(profileData);
+      
+      // ✅ Force update form with returned data
+      if (result) {
+        setProfileData({
+          fullName: result.fullName || "",
+          bio: result.bio || "",
+        });
+      }
+      
+      toast.success("Profile updated successfully!");
     } catch (error) {
       // Error handled in store
     } finally {
@@ -75,6 +96,7 @@ const ProfilePage = () => {
         newPassword: passwordData.newPassword,
       });
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      toast.success("Password changed successfully!");
     } catch (error) {
       // Error handled in store
     } finally {
@@ -89,22 +111,34 @@ const ProfilePage = () => {
 
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image");
+      e.target.value = '';
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Image must be less than 5MB");
+      e.target.value = '';
       return;
     }
 
     setSelectedFile(URL.createObjectURL(file));
     setLoading(true);
     try {
-      await updateProfilePic(file);
+      const result = await updateProfilePic(file);
+      
+      // ✅ Clear preview after successful upload
+      setTimeout(() => {
+        setSelectedFile(null);
+      }, 2000);
+      
+      toast.success("Profile picture updated!");
     } catch (error) {
-      // Error handled in store
+      setSelectedFile(null);
     } finally {
       setLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
