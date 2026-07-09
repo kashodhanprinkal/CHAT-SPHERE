@@ -113,7 +113,7 @@ const faqs = [
     id: 5,
     q: "How do I contact support?",
     keywords: ["contact", "support", "help", "reach"],
-    a: `📧 Email: ${USER.email}\n📱 Phone: ${USER.phone}\n🕐 Available: Mon-Fri, 10 AM - 8 PM IST\n\nI'll respond within 24 hours!`,
+    a: `📧 Email: ${USER.email}\n📱 Phone: ${USER.phone}\n\nI'll respond within 24 hours!`,
     category: "Support",
   },
 ];
