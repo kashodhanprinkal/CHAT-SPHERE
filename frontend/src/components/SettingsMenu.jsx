@@ -69,13 +69,13 @@ const SettingsMenu = () => {
       id: "help",
       icon: <HelpCircle className="w-4 h-4" />,
       label: "Help & Support",
-      onClick: () => navigate("/help"),
+      onClick: () => navigate("/help-support"),
     },
     {
       id: "privacy",
       icon: <Shield className="w-4 h-4" />,
       label: "Privacy Policy",
-      onClick: () => navigate("/privacy"),
+      onClick: () => navigate("/privacy-policy"),
     },
     { divider: true },
     {

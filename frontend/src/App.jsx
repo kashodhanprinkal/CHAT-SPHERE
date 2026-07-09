@@ -16,6 +16,8 @@ import IncomingCallModal from "./components/IncomingCallModal";
 import CallScreen from "./components/CallScreen.jsx";
 import { useChatStore } from "./store/useChatStore.js";
 import ProfilePage from "./pages/ProfilePage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import HelpSupport from "./pages/HelpSupport";
 
 
 function App() {
@@ -217,6 +219,9 @@ function App() {
                   />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/help-support" element={<HelpSupport />} />
                 </Routes>
               </div>
             </motion.div>
