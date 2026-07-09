@@ -1,289 +1,393 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
-  HelpCircle,
-  Mail,
-  MessageCircle,
-  Phone,
-  User,
-  Send,
-  Globe,
-  MapPin,
-  Briefcase,
-  Coffee,
-  Sparkles,
-  Users,
+  ArrowLeft, HelpCircle, Mail, MessageCircle, Phone, User, Send,
+  Globe, MapPin, Briefcase, Coffee, Sparkles, Users, Search, X,
+  ChevronDown, ChevronUp, ThumbsUp, ThumbsDown,
+  Code, Heart, Award, Clock, Star, Rocket, Target, Quote, Terminal, Layers
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-// ✅ Use these for social icons (they work in all versions)
+// ✅ Custom SVG Icons (since lucide-react might not have them)
 const GithubIcon = () => (
-  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.15 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.62.24 2.85.12 3.15.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
   </svg>
 );
 
 const LinkedinIcon = () => (
-  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
   </svg>
 );
 
-const TwitterIcon = () => (
-  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-  </svg>
-);
+// ============================================================
+// 📝 YOUR DETAILS - Update this section
+// ============================================================
+
+const USER = {
+  name: "Prinkal Kashodhan",
+  title: "Full Stack MERN Developer",
+  nickname: "PK",
+  bio: "Full Stack MERN Developer & M.Tech student passionate about building real-time web apps with clean UI and scalable backend.",
+  email: "kashodhanprinkal@gmail.com",
+  phone: "1234567890",
+  avatar: "👩‍💻",
+  motto: "Keep learning. Keep building. Keep growing.",
+  quote: "Great things are built one commit at a time.",
+  
+  social: {
+    github: "https://github.com/kashodhanprinkal",
+    linkedin: "https://linkedin.com/in/prinkal-kashodhan",
+  },
+  
+  work: {
+    role: "Software Engineer | Full Stack MERN Developer | React.js Developer | Frontend QA Tester",
+    location: "Vadodara, Gujarat, India 🇮🇳",
+    availability: "Open to Full-Time Opportunities",
+  },
+  
+  skills: ["React.js", "Node.js", "MongoDB", "Socket.IO", "Tailwind CSS", "Git"],
+  values: ["Continuous Learning", "Clean Code", "Solve Real Problems", "Consistency"],
+  funFacts: [
+    "🚀 Love turning ideas into full-stack apps",
+    "☕ Best debugging happens late at night",
+    "🌱 Learning new tech every week",
+    "💻 Love real-time communication projects",
+  ],
+  
+  techStack: {
+    frontend: [
+      "HTML5", "CSS3", "JavaScript (ES6+)", "TypeScript",
+      "React.js", "Next.js", "Vite", "Tailwind CSS",
+      "Bootstrap", "Redux Toolkit", "Zustand", "Axios", "Framer Motion"
+    ],
+    backend: [
+      "Node.js", "Express.js", "REST APIs", "Socket.IO",
+      "WebRTC", "JWT Authentication", "HTTP Cookies",
+      "Multer", "Cloudinary", "Resend", "Arcjet"
+    ],
+    database: ["MongoDB", "Mongoose", "SQL", "MySQL"],
+    devOps: ["Git", "GitHub", "GitHub Actions", "Docker", "Postman", "VS Code"],
+  },
+  
+  projects: [
+    { name: "💬 ChatSphere", desc: "Real-time chat with auth, live messaging, online presence & image sharing." }
+  ],
+};
+
+// ============================================================
+// 🎯 FAQ DATABASE
+// ============================================================
+
+const faqs = [
+  {
+    id: 1,
+    q: "How do I reset my password?",
+    keywords: ["password", "reset", "forgot", "login"],
+    a: "Go to login → Click 'Forgot Password' → Enter email → Check inbox for reset link → Create new password.",
+    category: "Account",
+  },
+  {
+    id: 2,
+    q: "How can I update my profile?",
+    keywords: ["profile", "update", "edit", "change"],
+    a: "Click Settings (three dots) → Select 'Profile' → Update name, bio, or picture → Click 'Save Profile'.",
+    category: "Profile",
+  },
+  {
+    id: 3,
+    q: "Is my data secure?",
+    keywords: ["security", "secure", "data", "privacy"],
+    a: "Yes! We use end-to-end encryption, HTTPS, regular security audits, and never share your data with third parties.",
+    category: "Security",
+  },
+  {
+    id: 4,
+    q: "How do I delete my account?",
+    keywords: ["delete", "remove", "account", "cancel"],
+    a: "⚠️ Go to Profile Settings → Scroll to 'Danger Zone' → Click 'Delete Account' → Confirm. This is permanent!",
+    category: "Account",
+  },
+  {
+    id: 5,
+    q: "How do I contact support?",
+    keywords: ["contact", "support", "help", "reach"],
+    a: `📧 Email: ${USER.email}\n📱 Phone: ${USER.phone}\n🕐 Available: Mon-Fri, 10 AM - 8 PM IST\n\nI'll respond within 24 hours!`,
+    category: "Support",
+  },
+];
+
+// ============================================================
+// 🚀 MAIN COMPONENT
+// ============================================================
 
 const HelpSupport = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [expanded, setExpanded] = useState(null);
+  const [feedback, setFeedback] = useState({});
+
+  const categories = ["All", ...new Set(faqs.map(f => f.category))];
+
+  const filteredFaqs = faqs.filter(f => {
+    const matchSearch = search === "" || 
+      f.q.toLowerCase().includes(search.toLowerCase()) ||
+      f.a.toLowerCase().includes(search.toLowerCase()) ||
+      f.keywords.some(k => k.includes(search.toLowerCase()));
+    const matchCategory = category === "All" || f.category === category;
+    return matchSearch && matchCategory;
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
+    setLoading(true);
     setTimeout(() => {
-      toast.success("Message sent successfully! I'll get back to you soon.");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setIsSubmitting(false);
+      toast.success("Message sent! I'll get back to you soon.");
+      setForm({ name: "", email: "", subject: "", message: "" });
+      setLoading(false);
     }, 1500);
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleFeedback = (id, helpful) => {
+    setFeedback({ ...feedback, [id]: helpful });
+    toast.success(helpful ? "Thanks! 😊" : "We'll improve it!");
   };
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 rounded-lg hover:bg-[var(--bg-hover)] transition-colors"
-          >
+          <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-[var(--bg-hover)]">
             <ArrowLeft className="w-5 h-5 text-[var(--text-secondary)]" />
           </button>
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">Help & Support</h1>
         </div>
 
+        {/* Search */}
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+          <input
+            type="text"
+            placeholder="🔍 Search for help..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* LEFT COLUMN - About Me & Contact Info */}
+          {/* LEFT - About Me */}
           <div className="lg:col-span-1 space-y-6">
-            
-            {/* About Me Card */}
-            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
-              <div className="flex flex-col items-center text-center">
-                <div className="w-24 h-24 rounded-full bg-[var(--accent)] flex items-center justify-center text-white text-3xl font-bold mb-4">
-                  <User className="w-12 h-12" />
-                </div>
-                
-                <h2 className="text-xl font-bold text-[var(--text-primary)]">John Developer</h2>
-                <p className="text-sm text-[var(--text-muted)]">Full Stack Developer</p>
-                
-                <div className="flex gap-3 mt-3">
-                  <span className="px-3 py-1 bg-[var(--bg-hover)] rounded-full text-xs text-[var(--text-secondary)]">
-                    React
-                  </span>
-                  <span className="px-3 py-1 bg-[var(--bg-hover)] rounded-full text-xs text-[var(--text-secondary)]">
-                    Node.js
-                  </span>
+            <div className="bg-[var(--bg-card)] border-2 border-[var(--accent)] rounded-2xl p-6 shadow-lg">
+              <div className="text-center">
+                <div className="text-5xl mb-2">{USER.avatar}</div>
+                <h2 className="text-xl font-bold text-[var(--text-primary)]">{USER.name}</h2>
+                <p className="text-sm text-[var(--accent)] font-medium">{USER.title}</p>
+                <p className="text-xs text-[var(--text-muted)]">aka "{USER.nickname}"</p>
+              </div>
+
+              <div className="mt-4 p-3 bg-[var(--bg-hover)] rounded-xl">
+                <p className="text-sm text-[var(--text-secondary)]">{USER.bio}</p>
+              </div>
+
+              <div className="mt-3 p-2 bg-[var(--accent)]/10 rounded-xl text-center">
+                <p className="text-xs italic text-[var(--text-secondary)]">💭 "{USER.quote}"</p>
+              </div>
+
+              <div className="mt-3 p-2 bg-gradient-to-r from-[var(--accent)]/5 to-transparent rounded-xl text-center border border-[var(--border-color)]">
+                <p className="text-xs font-medium text-[var(--accent)]">🌟 {USER.motto}</p>
+              </div>
+
+              {/* Fun Facts */}
+              <div className="mt-4">
+                <h4 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">⭐ Fun Facts</h4>
+                <div className="grid grid-cols-2 gap-1">
+                  {USER.funFacts.map((fact, i) => (
+                    <div key={i} className="text-xs text-[var(--text-secondary)] bg-[var(--bg-hover)] p-1.5 rounded-lg">{fact}</div>
+                  ))}
                 </div>
               </div>
 
-              <div className="mt-4 space-y-3 text-sm text-[var(--text-secondary)]">
-                <div className="flex items-center gap-3">
-                  <Briefcase className="w-4 h-4 text-[var(--accent)]" />
-                  <span>Freelance Developer</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-4 h-4 text-[var(--accent)]" />
-                  <span>Remote</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Users className="w-4 h-4 text-[var(--accent)]" />
-                  <span>Building awesome apps</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Coffee className="w-4 h-4 text-[var(--accent)]" />
-                  <span>Fueled by coffee ☕</span>
-                </div>
-              </div>
-            </div>
-
-            {/* About Me - Extended */}
-            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
-              <h3 className="text-md font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[var(--accent)]" />
-                About Me
-              </h3>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                I'm a passionate developer with over 5 years of experience building web applications. 
-                I love creating beautiful, functional, and user-friendly experiences.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <span className="px-2 py-1 bg-[var(--bg-hover)] rounded text-xs text-[var(--text-muted)]">
-                  💻 Web Development
-                </span>
-                <span className="px-2 py-1 bg-[var(--bg-hover)] rounded text-xs text-[var(--text-muted)]">
-                  🚀 Performance
-                </span>
-                <span className="px-2 py-1 bg-[var(--bg-hover)] rounded text-xs text-[var(--text-muted)]">
-                  🎨 UI/UX Design
-                </span>
-                <span className="px-2 py-1 bg-[var(--bg-hover)] rounded text-xs text-[var(--text-muted)]">
-                  📱 Mobile Apps
-                </span>
-              </div>
-            </div>
-
-            {/* Contact Info */}
-            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
-              <h3 className="text-md font-semibold text-[var(--text-primary)] mb-3">Contact Info</h3>
-              <div className="space-y-3 text-sm">
-                <a 
-                  href="mailto:john@example.com"
-                  className="flex items-center gap-3 text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
-                >
-                  <Mail className="w-4 h-4 text-[var(--accent)]" />
-                  john@example.com
-                </a>
-                <div className="flex items-center gap-3 text-[var(--text-secondary)]">
-                  <Phone className="w-4 h-4 text-[var(--accent)]" />
-                  +1 (555) 123-4567
+              {/* Skills */}
+              <div className="mt-4">
+                <h4 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">🚀 Skills</h4>
+                <div className="flex flex-wrap gap-1">
+                  {USER.skills.map((skill, i) => (
+                    <span key={i} className="text-xs px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] rounded-full">{skill}</span>
+                  ))}
                 </div>
               </div>
 
-              {/* Social Links with custom SVG icons */}
-              <div className="mt-4 flex gap-3">
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-[var(--bg-hover)] hover:bg-[var(--accent)] hover:text-white transition-colors"
-                >
-                  <GithubIcon />
-                </a>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-[var(--bg-hover)] hover:bg-[var(--accent)] hover:text-white transition-colors"
-                >
-                  <LinkedinIcon />
-                </a>
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-[var(--bg-hover)] hover:bg-[var(--accent)] hover:text-white transition-colors"
-                >
-                  <TwitterIcon />
-                </a>
-                <a
-                  href="https://portfolio.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-[var(--bg-hover)] hover:bg-[var(--accent)] hover:text-white transition-colors"
-                >
-                  <Globe className="w-4 h-4" />
-                </a>
+              {/* Values */}
+              <div className="mt-4">
+                <h4 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">💎 Values</h4>
+                <div className="flex flex-wrap gap-1">
+                  {USER.values.map((val, i) => (
+                    <span key={i} className="text-xs px-2 py-0.5 bg-[var(--bg-hover)] rounded-full text-[var(--text-secondary)]">{val}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact */}
+              <div className="mt-4 pt-3 border-t border-[var(--border-color)]">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2 text-[var(--text-secondary)]">
+                    <Mail className="w-4 h-4 text-[var(--accent)]" />
+                    <span className="text-xs">{USER.email}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <a href={USER.social.github} target="_blank" rel="noopener" className="p-1.5 rounded-lg bg-[var(--bg-hover)] hover:bg-[var(--accent)] hover:text-white transition">
+                      <GithubIcon />
+                    </a>
+                    <a href={USER.social.linkedin} target="_blank" rel="noopener" className="p-1.5 rounded-lg bg-[var(--bg-hover)] hover:bg-[var(--accent)] hover:text-white transition">
+                      <LinkedinIcon />
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center justify-center gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-hover)] p-2 rounded-lg">
+                <Clock className="w-3 h-3 text-green-500" />
+                <span>{USER.work.availability}</span>
               </div>
             </div>
 
+            {/* Tech Stack */}
+            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-4">
+              <h4 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">🛠️ Tech Stack</h4>
+              {Object.entries(USER.techStack).map(([key, techs]) => (
+                <div key={key} className="mb-2">
+                  <p className="text-xs text-[var(--text-muted)] capitalize">{key}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {techs.map((tech, i) => (
+                      <span key={i} className="text-xs px-2 py-0.5 bg-[var(--bg-hover)] rounded-full text-[var(--text-secondary)]">{tech}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Projects */}
+            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-4">
+              <h4 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">🚀 Project</h4>
+              {USER.projects.map((p, i) => (
+                <div key={i} className="p-3 bg-[var(--bg-hover)] rounded-xl">
+                  <p className="text-sm font-medium text-[var(--text-primary)]">{p.name}</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">{p.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* RIGHT COLUMN - FAQ & Contact Form */}
+          {/* RIGHT - FAQ & Contact */}
           <div className="lg:col-span-2 space-y-6">
             
-            {/* FAQ Section */}
-            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
+            {/* Categories */}
+            <div className="flex flex-wrap gap-2">
+              {categories.map(c => (
+                <button
+                  key={c}
+                  onClick={() => setCategory(c)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${
+                    category === c ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]/80"
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+
+            {/* FAQ List */}
+            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6">
               <h3 className="text-md font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
                 <HelpCircle className="w-4 h-4 text-[var(--accent)]" />
-                Frequently Asked Questions
+                FAQs <span className="ml-auto text-xs text-[var(--text-muted)]">{filteredFaqs.length} results</span>
               </h3>
               
-              <div className="space-y-4">
-                <div className="p-4 bg-[var(--bg-hover)] rounded-xl">
-                  <h4 className="text-sm font-medium text-[var(--text-primary)]">How do I reset my password?</h4>
-                  <p className="text-sm text-[var(--text-secondary)] mt-1">
-                    Go to the login page and click "Forgot Password". You'll receive a reset link via email.
-                  </p>
+              {filteredFaqs.length === 0 ? (
+                <div className="text-center py-8 text-[var(--text-muted)]">
+                  <HelpCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No results for "{search}"</p>
                 </div>
-                
-                <div className="p-4 bg-[var(--bg-hover)] rounded-xl">
-                  <h4 className="text-sm font-medium text-[var(--text-primary)]">How can I update my profile?</h4>
-                  <p className="text-sm text-[var(--text-secondary)] mt-1">
-                    Navigate to Settings &gt; Profile where you can update your name, bio, and profile picture.
-                  </p>
+              ) : (
+                <div className="space-y-3">
+                  {filteredFaqs.map(faq => (
+                    <div key={faq.id} className="border border-[var(--border-color)] rounded-xl overflow-hidden">
+                      <button
+                        onClick={() => setExpanded(expanded === faq.id ? null : faq.id)}
+                        className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-[var(--bg-hover)] transition"
+                      >
+                        <span className="text-sm font-medium text-[var(--text-primary)]">{faq.q}</span>
+                        {expanded === faq.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </button>
+                      {expanded === faq.id && (
+                        <div className="px-4 pb-4">
+                          <div className="text-sm text-[var(--text-secondary)] whitespace-pre-line">{faq.a}</div>
+                          <div className="flex items-center gap-3 pt-2 border-t border-[var(--border-color)] mt-2">
+                            <span className="text-xs text-[var(--text-muted)]">Helpful?</span>
+                            <button onClick={() => handleFeedback(faq.id, true)} className={`p-1 rounded ${feedback[faq.id] === true ? "text-green-500" : "text-[var(--text-muted)]"}`}>
+                              <ThumbsUp className="w-4 h-4" />
+                            </button>
+                            <button onClick={() => handleFeedback(faq.id, false)} className={`p-1 rounded ${feedback[faq.id] === false ? "text-red-500" : "text-[var(--text-muted)]"}`}>
+                              <ThumbsDown className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                
-                <div className="p-4 bg-[var(--bg-hover)] rounded-xl">
-                  <h4 className="text-sm font-medium text-[var(--text-primary)]">Is my data secure?</h4>
-                  <p className="text-sm text-[var(--text-secondary)] mt-1">
-                    Yes! We use industry-standard encryption and security measures to protect your data.
-                  </p>
-                </div>
-                
-                <div className="p-4 bg-[var(--bg-hover)] rounded-xl">
-                  <h4 className="text-sm font-medium text-[var(--text-primary)]">How do I delete my account?</h4>
-                  <p className="text-sm text-[var(--text-secondary)] mt-1">
-                    Go to Settings &gt; Profile and click "Delete Account" in the Danger Zone section.
-                  </p>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Contact Form */}
-            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6 shadow-sm">
-              <h3 className="text-md font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+            <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-6">
+              <h3 className="text-md font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
                 <MessageCircle className="w-4 h-4 text-[var(--accent)]" />
-                Send Me a Message
+                Send a Message
               </h3>
+              <p className="text-sm text-[var(--text-muted)] mb-4">I'll respond within 24 hours! 💬</p>
               
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-                      Your Name
-                    </label>
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Name</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                       <input
                         type="text"
                         name="name"
-                        value={formData.name}
-                        onChange={handleChange}
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
                         required
-                        className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent outline-none transition"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
                         placeholder="John Doe"
                       />
                     </div>
                   </div>
-                  
                   <div>
-                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-                      Your Email
-                    </label>
+                    <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Email</label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                       <input
                         type="email"
                         name="email"
-                        value={formData.email}
-                        onChange={handleChange}
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
                         required
-                        className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent outline-none transition"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
                         placeholder="john@example.com"
                       />
                     </div>
@@ -291,46 +395,42 @@ const HelpSupport = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-                    Subject
-                  </label>
+                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Subject</label>
                   <input
                     type="text"
                     name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
+                    value={form.subject}
+                    onChange={(e) => setForm({ ...form, subject: e.target.value })}
                     required
-                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] outline-none"
                     placeholder="What's this about?"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
-                    Message
-                  </label>
+                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Message</label>
                   <textarea
                     name="message"
-                    value={formData.message}
-                    onChange={handleChange}
+                    value={form.message}
+                    onChange={(e) => setForm({ ...form, message: e.target.value })}
                     required
                     rows="4"
-                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent outline-none transition resize-none"
+                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--bg-input)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent)] outline-none resize-none"
                     placeholder="How can I help you?"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-2.5 rounded-lg bg-[var(--accent)] text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="w-full py-2.5 rounded-lg bg-[var(--accent)] text-white font-medium hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {isSubmitting ? (
+                  {loading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <Send className="w-4 h-4" />
                   )}
-                  {isSubmitting ? "Sending..." : "Send Message"}
+                  {loading ? "Sending..." : "Send Message 📨"}
                 </button>
               </form>
             </div>
