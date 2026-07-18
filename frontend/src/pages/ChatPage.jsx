@@ -17,29 +17,16 @@ function ChatPage() {
 
   return (
 
-    // =========================
-    // 🌍 MAIN PAGE CONTAINER
-    // h-screen -> fixed full screen
-    // overflow-hidden -> prevents full page scrolling
-    // =========================
+  
     <div className="w-full h-screen overflow-hidden">
 
-      {/* =========================
-          ✨ ANIMATED BORDER WRAPPER
-      ========================= */}
+      {/* ANIMATED BORDER WRAPPER*/}
       <BorderAnimatedContainer>
 
-        {/* =========================
-            🧱 MAIN FLEX LAYOUT
-            Left Sidebar + Right Chat
-        ========================= */}
+        {/* MAIN FLEX LAYOUT */}
         <div className="flex w-full h-screen overflow-hidden rounded-2xl">
 
-          {/* ======================================================
-              🟣 LEFT SIDEBAR
-              - Shows chats/contact list
-              - Hidden on mobile when chat is open
-          ====================================================== */}
+          {/* - Shows chats/contact list*/}
           <div
             className={`
               flex flex-col
@@ -56,17 +43,13 @@ function ChatPage() {
             `}
           >
 
-            {/* 👤 Profile Header */}
+            {/*  Profile Header */}
             <ProfileHeader />
 
-            {/* 🔄 Chats / Contacts Switch */}
+            {/* Chats / Contacts Switch */}
             <ActiveTabSwitch />
 
-            {/* =========================
-                📜 SIDEBAR SCROLL AREA
-                min-h-0 -> fixes flex overflow issue
-                overflow-y-auto -> scroll only this area
-            ========================= */}
+            {/*  SIDEBAR SCROLL AREA*/}
             <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 space-y-2">
 
               {/* 💬 SHOW CHATS OR CONTACTS */}
@@ -79,11 +62,7 @@ function ChatPage() {
             </div>
           </div>
 
-          {/* ======================================================
-              🔵 RIGHT CHAT AREA
-              - Shows selected conversation
-              - Hidden on mobile until user selects chat
-          ====================================================== */}
+          {/*RIGHT CHAT AREA */}
           <div
             className={`
               flex flex-col
@@ -101,9 +80,7 @@ function ChatPage() {
             `}
           >
 
-            {/* =========================
-                💬 CHAT CONTAINER
-            ========================= */}
+            {/* CHAT CONTAINER*/}
             {selectedUser ? (
               <ChatContainer />
             ) : (
