@@ -30,7 +30,7 @@ function ProfileHeader() {
   };
 
   return (
-    <div className="p-4 md:p-6 border-b border-[var(--border-color)] bg-[var(--bg-secondary)]">
+    <div className="p-4 md:p-6 border-b border-[#2a2a2a] bg-[#1a1a1a]">
       <div className="flex items-center justify-between">
         
         {/* LEFT - Avatar + Name */}
@@ -45,7 +45,7 @@ function ProfileHeader() {
                 alt={authUser?.fullName}
                 className="size-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+              <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                 <span className="text-white text-xs font-medium">Change</span>
               </div>
             </button>
@@ -59,11 +59,11 @@ function ProfileHeader() {
           </div>
 
           <div>
-            <h3 className="text-[var(--text-primary)] font-semibold text-base">
+            <h3 className="text-gray-100 font-semibold text-base">
               {authUser?.fullName}
             </h3>
-            <p className={`text-xs ${isOnline ? "text-green-500" : "text-[var(--text-muted)]"}`}>
-              {isOnline ? "🟢 Online" : "⚫ Offline"}
+            <p className={`text-xs ${isOnline ? "text-emerald-400" : "text-gray-500"}`}>
+              {isOnline ? "● Online" : "○ Offline"}
             </p>
           </div>
         </div>

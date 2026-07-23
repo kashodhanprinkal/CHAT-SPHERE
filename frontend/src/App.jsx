@@ -19,7 +19,6 @@ import ProfilePage from "./pages/ProfilePage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import HelpSupport from "./pages/HelpSupport";
 
-
 function App() {
   const { theme } = useChatStore();
 
@@ -46,17 +45,17 @@ function App() {
   }
 
   return (
-<div className="h-screen overflow-y-auto overflow-x-hidden relative bg-[var(--bg-primary)] text-[var(--text-primary)] scroll-smooth">
+    <div className="h-screen overflow-y-auto overflow-x-hidden relative bg-black text-white scroll-smooth">
       
-      {/* Animated Grid */}
+      {/* Subtle Grid Pattern */}
       <div
-        className="fixed inset-0 opacity-10 pointer-events-none
-          bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),
-          linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)]
+        className="fixed inset-0 opacity-5 pointer-events-none
+          bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),
+          linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)]
           bg-[size:30px_30px] sm:bg-[size:40px_40px]"
       />
 
-      {/* Animated Glow Orbs */}
+      {/* Subtle Glow Orbs - Grey/White */}
       <motion.div
         animate={{ 
           x: [0, 50, -30, 0],
@@ -65,7 +64,7 @@ function App() {
         }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         className="fixed top-20 left-10 sm:left-32 w-48 sm:w-96 h-48 sm:h-96 
-          bg-gradient-to-r from-pink-500/30 to-purple-500/30 
+          bg-gradient-to-r from-white/10 to-gray-400/10 
           blur-[100px] sm:blur-[150px] rounded-full pointer-events-none"
       />
 
@@ -77,7 +76,7 @@ function App() {
         }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         className="fixed bottom-20 right-10 sm:right-32 w-48 sm:w-96 h-48 sm:h-96 
-          bg-gradient-to-r from-cyan-500/30 to-blue-500/30 
+          bg-gradient-to-r from-gray-500/10 to-white/10 
           blur-[100px] sm:blur-[150px] rounded-full pointer-events-none"
       />
 
@@ -88,7 +87,7 @@ function App() {
         }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         className="hidden sm:block fixed top-1/2 left-1/2 w-[35rem] h-[35rem] 
-          -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-600/20 to-cyan-600/20 
+          -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-gray-600/10 to-gray-300/10 
           blur-[180px] rounded-full pointer-events-none"
       />
 
@@ -112,21 +111,21 @@ function App() {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm w-fit">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-300"></span>
                 </span>
-                <span className="text-xs text-slate-300">500+ Active Users</span>
+                <span className="text-xs text-gray-400">500+ Active Users</span>
               </div>
 
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight">
                 <span className="text-white">Welcome to</span>
                 <br />
-                <span className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent animate-gradient">
+                <span className="bg-gradient-to-r from-gray-100 via-gray-300 to-white bg-clip-text text-transparent animate-gradient">
                   ChatSphere
                 </span>
               </h1>
 
-              <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-md">
+              <p className="text-gray-400 text-base sm:text-lg leading-relaxed max-w-md">
                 Connect instantly, chat seamlessly, and experience a beautifully designed
                 real-time messaging platform with crystal-clear video & voice calls.
               </p>
@@ -143,7 +142,7 @@ function App() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-center gap-3 text-slate-300 text-sm bg-white/5 rounded-lg px-3 py-2 border border-white/5"
+                    className="flex items-center gap-3 text-gray-300 text-sm bg-white/5 rounded-lg px-3 py-2 border border-white/5 hover:bg-white/10 transition-colors"
                   >
                     <span className="text-xl">{feature.icon}</span>
                     <span>{feature.text}</span>
@@ -153,29 +152,29 @@ function App() {
 
               <div className="flex gap-8 mt-6 pt-4 border-t border-white/10">
                 <div>
-                  <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent">
                     10K+
                   </div>
-                  <div className="text-xs text-slate-500">Messages Daily</div>
+                  <div className="text-xs text-gray-500">Messages Daily</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-300 to-white bg-clip-text text-transparent">
                     99.9%
                   </div>
-                  <div className="text-xs text-slate-500">Uptime</div>
+                  <div className="text-xs text-gray-500">Uptime</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                  <div className="text-2xl font-bold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent">
                     24/7
                   </div>
-                  <div className="text-xs text-slate-500">Support</div>
+                  <div className="text-xs text-gray-500">Support</div>
                 </div>
               </div>
 
               <div className="flex gap-3 mt-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-pink-500 to-pink-400 rounded-full animate-bounce" />
-                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-cyan-500 to-cyan-400 rounded-full animate-bounce delay-100" />
-                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full animate-bounce delay-200" />
+                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-300 rounded-full animate-bounce" />
+                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-400 rounded-full animate-bounce delay-100" />
+                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-500 rounded-full animate-bounce delay-200" />
               </div>
             </motion.div>
           )}
@@ -189,14 +188,14 @@ function App() {
               transition={{ duration: 0.6, ease: "easeOut" }}
               className={`
                 w-full rounded-2xl sm:rounded-3xl
-                border border-white/20 
-                bg-gradient-to-br from-white/10 via-white/5 to-transparent
+                border border-white/10 
+                bg-gradient-to-br from-white/5 via-white/[0.03] to-transparent
                 backdrop-blur-2xl shadow-2xl overflow-hidden
-                transition-all duration-500 hover:shadow-cyan-500/10
+                transition-all duration-500 hover:shadow-white/5
                 ${authUser ? "max-w-6xl" : "max-w-md"}
               `}
             >
-              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-gray-400/50 to-transparent"></div>
               
               <div className="relative z-10 p-2 sm:p-4">
                 <Routes>
@@ -204,11 +203,10 @@ function App() {
                     path="/"
                     element={authUser ? <ChatPage /> : <Navigate to="/login" />}
                   />
-                      <Route
+                  <Route
                     path="/profile"
                     element={authUser ? <ProfilePage /> : <Navigate to="/login" />}
                   />
-
                   <Route
                     path="/login"
                     element={!authUser ? <LoginPage /> : <Navigate to="/" />}
@@ -219,9 +217,8 @@ function App() {
                   />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password/:token" element={<ResetPassword />} />
-
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/help-support" element={<HelpSupport />} />
+                  <Route path="/help-support" element={<HelpSupport />} />
                 </Routes>
               </div>
             </motion.div>
@@ -229,19 +226,19 @@ function App() {
         </div>
       </div>
 
-      {/* TOAST NOTIFICATIONS */}
+      {/* TOAST NOTIFICATIONS - Monochrome Theme */}
       <Toaster
         position="top-center"
         toastOptions={{
           duration: 4000,
           style: {
-            background: "rgba(15, 23, 42, 0.95)",
+            background: "rgba(0, 0, 0, 0.95)",
             backdropFilter: "blur(12px)",
-            color: "#f8fafc",
+            color: "#e5e5e5",
             borderRadius: "16px",
             padding: "12px 20px",
-            border: "1px solid rgba(255,255,255,0.1)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
           },
         }}
       />
@@ -249,7 +246,6 @@ function App() {
       {/* CALL COMPONENTS */}
       <IncomingCallModal />
       <CallScreen />
-
     </div>
   );
 }

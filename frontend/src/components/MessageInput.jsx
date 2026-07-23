@@ -147,7 +147,7 @@ function MessageInput() {
           value={text}
           onChange={handleTyping}
           placeholder="Type your message..."
-          className="flex-1 bg-slate-900/60 border border-white/10 rounded-full py-2 px-4 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          className="flex-1 bg-black/40 border border-white/10 rounded-full py-2 px-4 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
         />
 
         {/* FILE INPUT */}
@@ -165,20 +165,20 @@ function MessageInput() {
           onClick={() => fileInputRef.current?.click()}
           className={`p-2 rounded-full transition ${
             imagePreview
-              ? "text-cyan-400 bg-cyan-500/10"
-              : "text-slate-400 hover:text-white hover:bg-white/10"
+              ? "text-gray-300 bg-white/10"
+              : "text-gray-500 hover:text-white hover:bg-white/10"
           }`}
         >
           <ImageIcon className="w-5 h-5" />
         </button>
 
-<VoiceRecorder receiverId={selectedUser?._id} />
+        <VoiceRecorder receiverId={selectedUser?._id} />
 
         {/* SEND BUTTON */}
         <button
           type="submit"
           disabled={!text.trim() && !imagePreview}
-          className="p-2 rounded-full bg-gradient-to-r from-cyan-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-cyan-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2 rounded-full bg-gray-700 text-white hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <SendIcon className="w-5 h-5" />
         </button>
